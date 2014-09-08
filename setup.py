@@ -307,8 +307,7 @@ setup(name=PACKAGENAME,
       requires=[
           'glue',
           'gwpy',
-      ],
-      install_requires=[
+          'astropy',
       ],
       dependency_links=[
           'https://www.lsc-group.phys.uwm.edu/daswg/download/'
