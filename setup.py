@@ -64,7 +64,7 @@ else:
 PACKAGENAME = 'gwvet'
 AUTHOR = 'Duncan Macleod'
 AUTHOR_EMAIL = 'duncan.macleod@ligo.org'
-LICENSE = 'GPLv2'
+LICENSE = 'GPLv3'
 
 VERSION_PY = os.path.join(PACKAGENAME, 'version.py')
 
