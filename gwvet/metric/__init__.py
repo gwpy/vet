@@ -20,7 +20,9 @@
 assessing the performance of a `DataQualityVeto`.
 """
 
+import imp
 import importlib
+import inspect
 import re
 
 try:
@@ -208,17 +210,68 @@ class Metric(object):
         return cls(method, name=name, description=description, unit=unit)
         
     @classmethod
-    def from_py(cls, pyfile, methodname=None):
-        mod = read(pyfile)
+    def from_py(cls, pyfile, methodname=None, unit=None):
+        """Define a new `Metric` from a Python file.
+
+        Parameters
+        ----------
+        pyfile : `str`
+            path to the py file containing the metric function definition
+        methdoname : `str`
+            the name of the function; if not provided, assumes same as 'pyfile' name
+
+        Returns
+        -------
+        metric : `Metric`
+            a new metric with appropriate properties connected.
+
+        Notes
+        -----
+        The following keys are recognised by this method:
+
+
+        Examples
+        --------
+        The following config fully defines a custom `Metric`
+
+        """
+        try:
+            # get module name and import from 'pyfile' file
+            modname = pyfile.split('/')[-1].strip('.py')
+            mod = imp.load_source(modname, pyfile)   
+        except IOError:
+            print 'File "%(pyfile)s" not found.' % locals()
+            raise Exception('File "%(pyfile)s" not found.' % locals())
+        
         if methodname:
-            metric = getattr(mod, methodname)
+            try:
+                # import "methodname" method
+                method = getattr(mod, methodname)       
+            except AttributeError:
+                print 'No method named %(methodname)s found in file.' % locals()
+                raise Exception('No method named %(methodname)s found in file.' % locals())  
         else:
+            # check all methods defined in the module
             methods = [member for member in inspect.getmembers(mod) if inspect.isfunction(member)]
+            
             if len(methods) == 1:
-                metric = methods[0]
+                # import the only method found
+                method = methods[0]
+                methodname = method.__name__
+
+            elif modname in methods:
+                # import method with same name as file
+                method = getattr(mod, modname)
+                methodname = modname
+                
             else:
-                metric = getattr(mod, mod.__name__)
-        return cls(metric)
+                print 'No method named %(modname)s found in file. Provide methodname.' % locals()
+                raise Exception('No method named %(modname)s found in file. Provide methodname.' % locals() )
+            
+        # get description from method docstring
+        description = method.__doc__ or ''
+                    
+        return cls(method, name=methodname, description=description, unit=unit)
             
 
 
