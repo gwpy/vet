@@ -206,7 +206,29 @@ class Metric(object):
             method = getattr(module, methodname)
 
         return cls(method, name=name, description=description, unit=unit)
+        
+    @classmethod
+    def from_py(cls, pyfile, methodname=None):
+        mod = read(pyfile)
+        if methodname:
+            metric = getattr(mod, methodname)
+        else:
+            methods = [member for member in inspect.getmembers(mod) if inspect.isfunction(member)]
+            if len(methods) == 1:
+                metric = methods[0]
+            else:
+                metric = getattr(mod, mod.__name__)
+        return cls(metric)
+            
 
 
 # import standard metrics
 from metrics import *
+
+def read_all(pyfile):
+    mod = read(pyfile)
+    out = []
+    for member in inspect.getmembers(mod):
+        if inspect.isfunction(member):
+            out.append(Metric(member))
+    return out
