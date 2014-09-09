@@ -208,7 +208,7 @@ class Metric(object):
             method = getattr(module, methodname)
 
         return cls(method, name=name, description=description, unit=unit)
-        
+
     @classmethod
     def from_py(cls, pyfile, methodname=None, unit=None):
         """Define a new `Metric` from a Python file.
@@ -216,11 +216,13 @@ class Metric(object):
         Parameters
         ----------
         pyfile : `str`
-            path to the py file containing the metric function definition; this should be 
-            a python file containing at least one metric function definition.
+            path to the py file containing the metric function definition;
+            this should be a python file containing at least one metric
+            function definition.
         methdoname : `str`
-            the name of the function; if not provided, takes the name of the function in
-            file or the filename, if many functions present in file.
+            the name of the function; if not provided, takes the name of
+            the function in file or the filename, if many functions present
+            in file.
 
         Returns
         -------
@@ -236,27 +238,26 @@ class Metric(object):
         - ``'unit'``
         - ``'method'``
 
-        Examples
-        --------
-
         """
         try:
             # get module name and import from 'pyfile' file
             modname = pyfile.split('/')[-1].strip('.py')
-            mod = imp.load_source(modname, pyfile)   
+            mod = imp.load_source(modname, pyfile)
         except IOError:
             raise Exception('File "%(pyfile)s" not found.' % locals())
-        
+
         if methodname:
             try:
                 # import "methodname" method
-                method = getattr(mod, methodname)       
+                method = getattr(mod, methodname)
             except AttributeError:
-                raise Exception('No method named %(methodname)s found in file.' % locals())  
+                raise Exception('No method named %s found in file.'
+                                % methodname)
         else:
             # check all methods defined in the module
-            methods = [member for member in inspect.getmembers(mod) if inspect.isfunction(member)]
-            
+            methods = [member for member in inspect.getmembers(mod) if
+                       inspect.isfunction(member)]
+
             if len(methods) == 1:
                 # import single method found
                 method = methods[0]
@@ -266,15 +267,16 @@ class Metric(object):
                 # import method with same name as file
                 method = getattr(mod, modname)
                 methodname = modname
-                
+
             else:
-                raise Exception('No method named %(modname)s found in file. Provide methodname.' % locals() )
-            
+                raise Exception('No method named %s found in file. '
+                                'Provide methodname.' % methodname)
+
         # get description from method docstring
         description = method.__doc__ or ''
-                    
+
         return cls(method, name=methodname, description=description, unit=unit)
-            
+
 
 
 # import standard metrics
@@ -282,31 +284,32 @@ from metrics import *
 
 def read_all(pyfile):
     """Imports all metrics present in a given file.
-    
+
     Parameters
     ----------
     pyfile : `str`
-        path to the py file containing the metric function definition; this should be 
-        a python file containing at least one metric function definition.
+        path to the py file containing the metric function definition;
+        this should be a python file containing at least one metric
+        function definition.
 
     Returns
     -------
     metricList : `list`
         list of a new metric with appropriate properties connected.
-        
+
     """
     try:
         # get module name and import from 'pyfile' file
         modname = pyfile.split('/')[-1].strip('.py')
-        mod = imp.load_source(modname, pyfile)   
+        mod = imp.load_source(modname, pyfile)
     except IOError:
-        raise Exception('File "%(pyfile)s" not found.' % locals() )
-       
+        raise Exception('File %r not found.' % pyfile)
     # loop over all functions in file and add them
     metricList = []
     for method in inspect.getmembers(mod):
         if inspect.isfunction(method):
             description = method.__doc__ or ''
-            out.append(Metric(method, name=method.__name__, description=description) )
-            
+            out.append(Metric(method, name=method.__name__, 
+                              description=description))
+
     return metricList
