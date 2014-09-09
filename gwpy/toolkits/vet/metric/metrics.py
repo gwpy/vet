@@ -31,7 +31,7 @@ __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
 
 
-def deadtime(self, segments):
+def deadtime(segments, *args):
     """The active duration of a given set of segments.
     """
     return abs(segments.active) / abs(segments.valid) * 100
@@ -39,7 +39,7 @@ def deadtime(self, segments):
 register_metric(Metric(deadtime, 'Deadtime', unit=Unit('%')))
 
 
-def efficiency(self, segments, events):
+def efficiency(segments, events):
     """The decimal fraction of events vetoed by the given segments.
     """
     if isinstance(segments, DataQualityFlag):
@@ -49,12 +49,12 @@ def efficiency(self, segments, events):
     else:
         raise NotImplementedError("Custom efficiency calculations haven't "
                                     "been implemented yet.")
-    return len(vetoed) / len(events)
+    return len(vetoed) / len(events) * 100
 
 register_metric(Metric(efficiency, 'Efficiency', unit=Unit('%')))
 
 
-def efficiency_over_deadtime(self, segments, events):
+def efficiency_over_deadtime(segments, events):
     """The ratio of efficiency to deadtime.
     """
     return efficiency(segments, events) / deadtime(segments)

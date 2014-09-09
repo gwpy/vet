@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with GWVeto.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module defines the `Metric`, a figure or merit for
+"""This module defines the `Metric`, a figure of merit for
 assessing the performance of a `DataQualityVeto`.
 """
 
@@ -31,6 +31,8 @@ except ImportError:
     import builtin
 
 from astropy.units import (Quantity, Unit, dimensionless_unscaled)
+
+from gwpy.segments import DataQualityFlag
 
 from .. import version
 from .registry import (register_metric, get_all_metrics, get_metric)
@@ -244,20 +246,21 @@ class Metric(object):
             modname = pyfile.split('/')[-1].strip('.py')
             mod = imp.load_source(modname, pyfile)
         except IOError:
-            raise Exception('File "%(pyfile)s" not found.' % locals())
+            raise Exception('File %r not found.' % pyfile)
 
         if methodname:
             try:
                 # import "methodname" method
                 method = getattr(mod, methodname)
             except AttributeError:
-                raise Exception('No method named %s found in file.'
+                raise Exception('No method named %r found in file.'
                                 % methodname)
         else:
             # check all methods defined in the module
-            methods = [member for member in inspect.getmembers(mod) if
-                       inspect.isfunction(member)]
-
+            
+            methods = [func for func in mod.__dict__.itervalues() 
+                if inspect.isfunction(func)]
+                
             if len(methods) == 1:
                 # import single method found
                 method = methods[0]
@@ -269,8 +272,8 @@ class Metric(object):
                 methodname = modname
 
             else:
-                raise Exception('No method named %s found in file. '
-                                'Provide methodname.' % methodname)
+                raise Exception('No method named %r found in file. '
+                                'Provide methodname.' % modname)
 
         # get description from method docstring
         description = method.__doc__ or ''
@@ -313,3 +316,36 @@ def read_all(pyfile):
                               description=description))
 
     return metricList
+    
+def evaluate(segments, triggers, metrics):
+    """Applies metrics to given segments and triggers.
+
+    Parameters
+    ----------
+    segments : `~gwpy.segments.DataQualityFlag`
+        segments to be analyzed.
+    triggers : `~gwpy.segments.SnglInspiralTable`
+        triggers to be analyzed.
+    metrics : `Metric`, `list`
+        metric or list of metrics with which to evaluate segments and triggers
+
+    Returns
+    -------
+    results : `float`, `list`
+        result(s) produced by the metric(s).
+
+    """
+
+    # needs type checking here
+
+    if isinstance(metrics, Metric):
+        results = metrics(segments, triggers)
+
+    elif isinstance(metrics, list):
+        results = []
+        for metric in metrics: results.append(metric(segments, triggers))
+
+    else:
+         raise Exception('Third argument must be a metric or list of metrics.')
+
+    return results
