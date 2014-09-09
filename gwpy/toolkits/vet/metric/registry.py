@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) Duncan Macleod (2014)
 #
-# This file is part of GWVeto.
+# This file is part of GWpy VET.
 #
-# GWVeto is free software: you can redistribute it and/or modify
+# GWpy VET is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# GWVeto is distributed in the hope that it will be useful,
+# GWpy VET is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with GWVeto.  If not, see <http://www.gnu.org/licenses/>.
+# along with GWpy VET.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Registry for GWVeto metics
+"""Registry for GWpy VET metics
 
 All metric types should be registered for easy identification from the
 configuration INI files
