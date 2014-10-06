@@ -47,7 +47,8 @@ from .registry import (register_metric, get_all_metrics, get_metric)
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
-__all__ = ['Metric']
+__all__ = ['Metric', 'register_metric', 'get_metric', 'get_all_metrics',
+           'read_all', 'evaluate']
 
 re_quote = re.compile(r'^[\s\"\']+|[\s\"\']+$')
 
@@ -169,6 +170,11 @@ class Metric(object):
 
     # -------------------------------------------
     # Metric methods
+
+    def __repr__(self):
+        return '<{type}({name}, {desc})>'.format(
+            type=type(self).__name__, name=self.name,
+            desc=self.description.split('\n', 1)[0])
 
     def __str__(self):
         return self.name
