@@ -51,10 +51,10 @@ def register_metric(metric, name=None, force=False):
     """
     if name is None:
         name = metric.name
-    if not name in _METRICS or force:
-        _METRICS[name] = metric
+    if force or name.lower() not in _METRICS:
+        _METRICS[name.lower()] = metric
     else:
-        raise ValueError("Plot '%s' has already been registered to the %s "
+        raise ValueError("Plot %r has already been registered to the %s "
                          "class" % (name, metric.__name__))
 
 
@@ -69,9 +69,9 @@ def get_metric(name):
     """
     name = re.sub('[\'\"]', '', name)
     try:
-        return _METRICS[name]
+        return _METRICS[name.lower()]
     except KeyError:
-        raise ValueError("No Metric registered with name '%s'" % name)
+        raise ValueError("No Metric registered with name %r" % name)
 
 
 def get_all_metrics():
