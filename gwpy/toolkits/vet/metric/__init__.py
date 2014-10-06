@@ -16,14 +16,22 @@
 # You should have received a copy of the GNU General Public License
 # along with GWVeto.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module defines the `Metric`, a figure of merit for
-assessing the performance of a `DataQualityVeto`.
+""".. currentmodule:: gwpy.toolkits.vet.metric
+#######
+Metrics
+#######
+
+GWpy VET defines a custom `Metric` object, designed to wrap existing figure-of-merit functions into a standard format such that they can be applied conveniently to a set of segments and event triggers.
 """
 
 import imp
-import importlib
 import inspect
 import re
+
+try:
+    from importlib import import_module
+except ImportError:
+    import_module = __import__
 
 try:
     import __builtin__ as builtin
@@ -47,7 +55,22 @@ re_quote = re.compile(r'^[\s\"\']+|[\s\"\']+$')
 class Metric(object):
     """A `Metric` defines a figure of merit to assess veto performance.
 
-    This class is a base class, designed to be subclassed.
+    This object can be used to wrap an existing metric function into a
+    standard interface for performing studies of data-quality flag
+    impact.
+
+    Parameters
+    ----------
+    method : `callable`
+        the figure-of-merit method that should be executed
+    name : `str`, optional
+        the name of this `Metric`. If not given, this is taken from the
+        method name
+    description : `str`, optional
+        the description of this `Metric`. If not given, this is taken from
+        the method docstring.
+    unit : `str`, `~astropy.units.core.Unit`
+        the physical unit of the output of this metric function
     """
     __slots__ = ['_name', '_method', '_description', '_unit']
 
@@ -147,16 +170,20 @@ class Metric(object):
     # -------------------------------------------
     # Metric methods
 
-    def __call__(self, segments, events=None, **kwargs):
+    def __str__(self):
+        return self.name
+
+    def __call__(self, *args, **kwargs):
         """Execute the method on the aruments and return the result
+
+        All args and kwargs are passed through to the metric method.
 
         Returns
         -------
         fom : :class:`~astropy.units.quantity.Quantity`
             the value of the metric for the given inputs, with a unit.
         """
-        return Quantity(self.method(segments, events, **kwargs),
-                        unit=self.unit)
+        return Quantity(self.method(*args, **kwargs), unit=self.unit)
 
     @classmethod
     def from_ini(cls, config, section):
@@ -280,10 +307,9 @@ class Metric(object):
 
         return cls(method, name=methodname, description=description, unit=unit)
 
-
-
 # import standard metrics
 from metrics import *
+
 
 def read_all(pyfile):
     """Imports all metrics present in a given file.
@@ -316,7 +342,8 @@ def read_all(pyfile):
                               description=description))
 
     return metricList
-    
+
+
 def evaluate(segments, triggers, metrics):
     """Applies metrics to given segments and triggers.
 
