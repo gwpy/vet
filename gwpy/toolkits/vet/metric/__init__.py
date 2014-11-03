@@ -172,7 +172,7 @@ class Metric(object):
     # Metric methods
 
     def __repr__(self):
-        return '<{type}({name}, {desc})>'.format(
+        return '<{type}("{name}", "{desc}")>'.format(
             type=type(self).__name__, name=self.name,
             desc=self.description.split('\n', 1)[0])
 
