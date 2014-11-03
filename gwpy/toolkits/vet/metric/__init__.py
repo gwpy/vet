@@ -290,10 +290,10 @@ class Metric(object):
                                 % methodname)
         else:
             # check all methods defined in the module
-            
-            methods = [func for func in mod.__dict__.itervalues() 
+
+            methods = [func for func in mod.__dict__.itervalues()
                 if inspect.isfunction(func)]
-                
+
             if len(methods) == 1:
                 # import single method found
                 method = methods[0]
@@ -344,7 +344,7 @@ def read_all(pyfile):
     for method in inspect.getmembers(mod):
         if inspect.isfunction(method):
             description = method.__doc__ or ''
-            out.append(Metric(method, name=method.__name__, 
+            out.append(Metric(method, name=method.__name__,
                               description=description))
 
     return metricList
