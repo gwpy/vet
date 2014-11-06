@@ -26,3 +26,5 @@ __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
 
 from .metric import *
+from .segments import *
+from .triggers import *
