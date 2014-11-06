@@ -24,6 +24,10 @@ from . import version
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
 
+from astropy.io.registry import _get_valid_format
+
+from glue.lal import Cache
+
 from gwpy.time import to_gps
 from gwpy.segments import *
 
@@ -44,6 +48,12 @@ def get_segments(flags, segments, cache=None,
     elif isinstance(segments, tuple):
         segments = [Segment(to_gps(segments[0]), to_gps(segments[1]))]
     segments = SegmentList(segments)
+
+    # get format for files
+    if cache is not None and not isinstance(cache, Cache):
+        kwargs.setdefault(
+            'format', _get_valid_format('read', DataQualityDict, None,
+                                        None, (cache[0],), {}))
 
     # populate an existing set of flags
     if isinstance(flags, (DataQualityFlag, DataQualityDict)):
