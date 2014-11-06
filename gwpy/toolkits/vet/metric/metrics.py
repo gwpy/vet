@@ -72,7 +72,9 @@ def deadtime(segments, *args):
     %dt : `float`
         the deadtime of the given segments as a percentage
     """
-    return abs(segments.active) / abs(segments.valid) * 100
+    if abs(segments.known) == 0:
+        return 0
+    return float(abs(segments.active)) / float(abs(segments.known)) * 100
 
 register_metric(Metric(deadtime, 'Deadtime', unit=Unit('%')))
 
