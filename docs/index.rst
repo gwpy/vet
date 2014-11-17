@@ -23,6 +23,7 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
+   install
    metrics
    evaluate/index
    utilities
