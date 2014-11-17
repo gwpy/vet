@@ -26,6 +26,8 @@ from . import version
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
 
+from glue.lal import Cache
+
 from gwpy.table import lsctables
 from gwpy.table.io import trigfind
 from gwpy.table.utils import get_row_value
@@ -36,6 +38,7 @@ ETG_TABLE = {
     # single-IFO burst
     'omicron': lsctables.SnglBurstTable,
     'omega': lsctables.SnglBurstTable,
+    'omegadq': lsctables.SnglBurstTable,
     'kleinewelle': lsctables.SnglBurstTable,
     'kw': lsctables.SnglBurstTable,
     'dmtomega': lsctables.SnglBurstTable,
@@ -123,6 +126,7 @@ def get_triggers(channel, etg, segments, table=None, columns=None, cache=None):
         table = get_etg_table(etg)
     elif isinstance(table, str):
         table = TableByName[table]
+    form = etg
     # make new table instance
     new = lsctables.New(table, columns=columns)
     new.segments = type(segments)()
@@ -135,7 +139,10 @@ def get_triggers(channel, etg, segments, table=None, columns=None, cache=None):
                                             segment[1])
             form = 'ligolw'
         else:
-            c2 = cache.sieve(segment=segment)
+            if isinstance(cache, Cache):
+                c2 = cache.sieve(segment=segment)
+            else:
+                c2 = cache
             form = etg
         new.extend(table.read(c2, columns=columns, filt=filter_, format=form))
         new.segments.append(segment)
