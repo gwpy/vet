@@ -73,9 +73,10 @@ class Metric(object):
     unit : `str`, `~astropy.units.core.Unit`
         the physical unit of the output of this metric function
     """
-    __slots__ = ['_name', '_method', '_description', '_unit']
+    __slots__ = ['_name', '_method', '_description', '_unit', '_triggers']
 
-    def __init__(self, method, name=None, description=None, unit=None):
+    def __init__(self, method, name=None, description=None, unit=None,
+                 needs_triggers=None):
         self.method = method
         if name is None and self.method.__name__ != '<lambda>':
             name = self.method.__name__
@@ -84,6 +85,7 @@ class Metric(object):
             description = self.method.__doc__
         self.description = description
         self.unit = unit
+        self._triggers = needs_triggers
 
     # -------------------------------------------
     # Metric properties
@@ -167,6 +169,17 @@ class Metric(object):
         if not isinstance(u, Unit):
             u = Unit(u)
         self._unit = u
+
+    @property
+    def needs_triggers(self):
+        """Whether this `Metric` needs a trigger table to run
+
+        :type: `bool`
+        """
+        if self._triggers is not None:
+            return self._triggers
+        else:
+            return len(inspect.getargspec(self.method).args) > 1
 
     # -------------------------------------------
     # Metric methods
