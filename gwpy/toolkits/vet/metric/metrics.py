@@ -20,7 +20,8 @@
 """
 
 from __future__ import division
-from functools import wraps
+
+import decorator
 
 from astropy.units import Unit
 
@@ -37,29 +38,20 @@ __version__ = version.version
 # -----------------------------------------------------------------------------
 # Utilities
 
-def _as_dqflag(segments):
-    """Convenience method to convert segments if needed
-    """
-    if isinstance(segments, DataQualityFlag):
-        return segments
-    else:
-        return DataQualityFlag(active=segments)
-
-def _use_dqflag(f):
+@decorator.decorator
+def _use_dqflag(f, segments, *args, **kwargs):
     """Decorator a method to convert incoming segments into `DataQualityFlag`.
     """
-    @wraps(f)
-    def decorated_func(segments, *args, **kwargs):
-        segments = _as_dqflag(segments)
-        return f(segments, *args, **kwargs)
-    return decorated_func
+    if not isinstance(segments, DataQualityFlag):
+        segments = DataQualityFlag(active=segments)
+    return f(segments, *args, **kwargs)
 
 
 # -----------------------------------------------------------------------------
 # Standard metrics
 
 @_use_dqflag
-def deadtime(segments, *args):
+def deadtime(segments):
     """The active duration of a given set of segments.
 
     Parameters
