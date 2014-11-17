@@ -309,6 +309,7 @@ setup(name=DISTNAME,
           'glue',
           'gwpy',
           'astropy',
+          'decorator',
       ],
       install_requires=[
           'gwpy',
