@@ -36,13 +36,11 @@ def get_segments(flags, segments, cache=None,
                  url='https://segdb-er.ligo.caltech.edu', **kwargs):
     """Fetch some segments from the segment database
 
-    .. currentmodule:: gwpy.segments
-
     Parameters
     ----------
     flags : `str`, `list`
         one of more flags for which to query
-    segments : `DataQualityFlag`, `SegmentList`
+    segments : `~gwpy.segments.DataQualityFlag`, `~gwpy.segments.SegmentList`
         span over which to query for flag segments
     cache : `~glue.lal.Cache`, optional
         cache of files to use as data source
@@ -50,14 +48,15 @@ def get_segments(flags, segments, cache=None,
         URL of segment database, if ``cache`` is not given
     **kwargs
         other keyword arguments to pass to either
-        `DataQualityFlag.read` (if ``cache`` is given) or
-        `DataQualityFlag.query` (otherwise)
+        `~gwpy.segments.DataQualityFlag.read` (if ``cache`` is given) or
+        `~gwpy.segments.DataQualityFlag.query` (otherwise)
 
     Returns
     -------
-    segments : `DataQualityFlag` or `DataQualityDict`
-        a single `DataQualityFlag` (if ``flags`` is given as a `str`), or
-        a `DataQualityDict` (if ``flags`` is given as a `list`)
+    segments : `~gwpy.segments.DataQualityFlag` or `~gwpy.segments.DataQualityDict`
+        a single `~gwpy.segments.DataQualityFlag` (if ``flags`` is given
+        as a `str`), or a `~gwpy.segments.DataQualityDict` (if ``flags``
+        is given as a `list`)
     """
     # format segments
     if isinstance(segments, DataQualityFlag):

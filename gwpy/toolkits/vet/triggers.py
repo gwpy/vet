@@ -114,6 +114,20 @@ def get_triggers(channel, etg, segments, table=None, columns=None, cache=None):
     etg : `str`
         name of Event Trigger Generator for which to search
     segments : `~gwpy.segments.DataQualityFlag`, `~gwpy.segments.SegmentList`
+        span over which to read triggers
+    table : `type`, optional
+        table class to read into, e.g. `~gwpy.table.lsctables.SnglBurstTable`
+    columns : `list` of `str`, optional
+        `list` of column names to read, defaults to all valid columns
+    cache : `~glue.lal.Cache`, optional
+        cache of files to use as data source. If not given, the :meth:`fetch`
+        method of the relevant table class will be used to find and read the
+        triggers
+
+    Returns
+    -------
+    table : `~gwpy.table.Table`
+        a LIGO_LW `Table` object, filled with rows
     """
     # format segments
     if isinstance(segments, DataQualityFlag):
