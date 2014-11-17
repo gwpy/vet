@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with GWVeto.  If not, see <http://www.gnu.org/licenses/>.
 
-""".. currentmodule:: gwpy.toolkits.vet.metric
+""".. currentmodule:: gwpy.toolkits.vet
 #######
 Metrics
 #######
