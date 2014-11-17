@@ -1,8 +1,8 @@
-###############################################################
-GWVET: the Gravitational-Wave Veto Evaluation and Testing suite
-###############################################################
+##################################################################
+GWpy VET: the Gravitational-Wave Veto Evaluation and Testing suite
+##################################################################
 
-GWVET is a python toolbox for evaluating the performance of Data Quality (DQ) vetoes.
+VET is a `GWpy <https://gwpy.github.io/>`_ toolbox for evaluating the performance of Data Quality (DQ) vetoes.
 
 What are Vetoes?
 ================
@@ -17,7 +17,12 @@ However, only those vetoes who perform well in cleaning data with as small a los
 
 This software suite provides methods for data analysts to test new and existing data quality vetoes on training data, to decide which to use in the full analysis.
 
-Contents
-========
+Documentation
+=============
 
-Coming soon...
+.. toctree::
+   :maxdepth: 2
+
+   metrics
+   evaluate/index
+   utilities
