@@ -314,6 +314,10 @@ setup(name=DISTNAME,
       install_requires=[
           'gwpy',
       ],
+      extras_require={
+          'doc': ['sphinx',
+                  'sphinxcontrib-programoutput'],
+      },
       dependency_links=[
           'https://www.lsc-group.phys.uwm.edu/daswg/download/'
               'software/source/glue-1.46.tar.gz#egg=glue-1.46',

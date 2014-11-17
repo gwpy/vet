@@ -67,8 +67,9 @@ extensions = [
     'sphinx.ext.linkcode',
     'numpydoc',
     'sphinxcontrib.epydoc',
-    'gwpy.sphinx.autoclassapi',
-    'gwpy.sphinx.directives',
+    'sphinxcontrib.programoutput',
+    'gwpy.utils.sphinx.autoclassapi',
+    'gwpy.utils.sphinx.directives',
 ]
 
 # customise autodoc
