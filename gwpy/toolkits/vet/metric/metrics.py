@@ -23,9 +23,12 @@ from __future__ import division
 
 import decorator
 
+import numpy
+
 from astropy.units import Unit
 
 from gwpy.segments import DataQualityFlag
+from gwpy.table.utils import get_table_column
 
 from .. import version
 from . import Metric
@@ -123,3 +126,19 @@ def efficiency_over_deadtime(segments, before, after=None):
 
 register_metric(Metric(efficiency_over_deadtime, 'Efficiency/Deadtime',
                        unit=None))
+
+
+@_use_dqflag
+def use_percentage(segments, before, after=None):
+    """The decimal fraction of segments that are used to veto triggers
+    """
+    times = get_table_column(before, 'time').astype(float)
+    used = 0
+    for seg in segments.active:
+        if numpy.logical_and(times >= float(seg[0]),
+                             times < float(seg[1])).any():
+            used += 1
+    return used / len(segments.active) * 100
+
+register_metric(Metric(
+    use_percentage, 'Use percentage', unit=Unit('%')))
