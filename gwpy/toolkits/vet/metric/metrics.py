@@ -67,6 +67,7 @@ def deadtime(segments):
     %dt : `float`
         the deadtime of the given segments as a percentage
     """
+    segments = segments.copy().coalesce()
     if abs(segments.known) == 0:
         return 0
     return float(abs(segments.active)) / float(abs(segments.known)) * 100
