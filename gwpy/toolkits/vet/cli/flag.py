@@ -77,14 +77,14 @@ def run(args):
     if args.verbose:
         gprint("Getting veto segments...", end=' ')
     if args.flag and os.path.isfile(args.flag[0]):
-        segs = get_segments(None, analysis, url=args.segment_url,
-                            cache=args.flag)
+        allsegs = get_segments(None, analysis, url=args.segment_url,
+                               cache=args.flag)
     else:
         segs = get_segments(args.flag, analysis, url=args.segment_url)
-    if args.intersection:
-        allsegs = segs.intersection()
-    else:
-        allsegs = segs.union()
+        if args.intersection:
+            allsegs = segs.intersection()
+        else:
+            allsegs = segs.union()
     if args.verbose:
         gprint("Done.")
 
