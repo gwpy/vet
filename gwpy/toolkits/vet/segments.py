@@ -68,7 +68,7 @@ def get_segments(flags, segments, cache=None,
     # get format for files
     if cache is not None and not isinstance(cache, Cache):
         kwargs.setdefault(
-            'format', _get_valid_format('read', DataQualityDict, None,
+            'format', _get_valid_format('read', DataQualityFlag, None,
                                         None, (cache[0],), {}))
 
     # populate an existing set of flags
@@ -82,9 +82,12 @@ def get_segments(flags, segments, cache=None,
     elif cache is None:
         return DataQualityDict.query(flags, segments, url=url, **kwargs)
     # read one flag
-    elif isinstance(flags, str):
-        segs = DataQualityFlag.read(cache, flags, coalesce=True, **kwargs)
-        segs.known &= segments
+    elif flags is None or isinstance(flags, str):
+        segs = DataQualityFlag.read(cache, flags, coalesce=False, **kwargs)
+        if segs.known:
+            segs.known &= segments
+        else:
+            segs.known = segments
         segs.active &= segments
         return segs
     # read lots of flags
