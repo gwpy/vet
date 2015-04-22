@@ -27,6 +27,7 @@ from gwpy.segments import (Segment, SegmentList, DataQualityFlag)
 from .. import version
 from ..segments import get_segments
 from ..triggers import get_triggers
+from ..core import evaluate_flag
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
@@ -68,7 +69,7 @@ def run(args):
                                 cache=args.analysis_segments,
                                 url=args.segment_url)
     else:
-        analysis = DataQualityFlag(active=span, valid=span)
+        analysis = DataQualityFlag(active=span, known=span)
     if args.verbose:
         gprint("Done, %.2f%% livetime."
                % (abs(analysis.active) / abs(span) * 100))
@@ -99,21 +100,14 @@ def run(args):
     else:
         triggers = None
 
-    # apply vetoes
-    if any([m.needs_triggers for m in args.metrics]):
-        if args.verbose:
-            gprint("Applying vetoes...", end=' ')
-        after = triggers.veto(allsegs.active)
-        if args.verbose:
-            gprint("Done, %d triggers remaining." % len(after))
-
     # apply metrics
     if args.verbose:
-        gprint("\nMetric results\n--------------")
+        gprint("Evaluating metrics...", end=' ')
+    results, after = evaluate_flag(allsegs, triggers=triggers,
+                                   metrics=args.metrics, injections=None)
 
-    for metric in args.metrics:
-        if metric.needs_triggers:
-            result = metric(allsegs, triggers, after=after)
-        else:
-            result = metric(allsegs)
+    if args.verbose:
+        gprint("Done.\n\nMetric results\n--------------")
+
+    for metric, result in results.iteritems():
         print('%s: %s' % (str(metric), result))
