@@ -199,3 +199,37 @@ def safety(segments, injections, threshold=SAFETY_THRESHOLD):
     return prob < threshold
 
 register_metric(Metric(safety, 'Safety', unit=None))
+
+
+def loudest_event_factory(column):
+    @_use_dqflag
+    def loudest_event(segments, before, after=None):
+        """Percentage reduction in the amplitude of the loudest event by %s
+
+        Parameters
+        ----------
+        segments : `DataQualityFlag`, `~glue.segments.segmentlist`
+            the set of segments to test
+        before : `~glue.ligolw.table.Table`
+            the event trigger table to test
+        after : `~glue.ligolw.table.Table`, optional
+            the remaining triggers after vetoes.
+            This is calculated is not given
+
+        Returns
+        ------
+        reduction : `float`
+            the percentage reduction in the amplitude of the loudest event
+        """
+        if after is None:
+            after = before.veto(segments.active)
+        brank = get_table_column(before, column).max()
+        arank = get_table_column(after, column).max()
+        return (brank - arank) / brank * 100
+    loudest_event.__doc__ %= column
+    return loudest_event
+
+for column in ['snr', 'new_snr', 'rho']:
+    register_metric(
+        Metric(loudest_event_factory(column),
+               'Loudest event by %s' % column, unit=Unit('%')))
