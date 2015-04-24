@@ -113,6 +113,15 @@ segopts.add_argument('-u', '--segment-url',
                      default='https://segdb.ligo.caltech.edu',
                      help='URL of segment database, default: %(default)s')
 
+outopts = sharedopts.add_argument_group(
+    'Output options',
+    'Configure HTML and figure output')
+outopts.add_argument('-o', '--html-dir', default=None,
+                     help='target directory for output HTML, '
+                          'default: %(default)s')
+outopts.add_argument('-l', '--label', default='Vetoes',
+                     help='text label for plots and HTML, default: %(default)s')
+
 subparsers = parser.add_subparsers(
     dest='mode', title='Select one of the following study modes',
     description='[run %s <mode> --help for detailed help]' % prog)
@@ -137,6 +146,12 @@ elif not args.metrics:
 args.metrics = map(get_metric, args.metrics)
 
 globalv.VERBOSE = args.verbose
+
+# set output directory
+if args.html_dir:
+    if not os.path.isdir(args.html_dir):
+        os.makedirs(args.html_dir)
+    os.chdir(args.html_dir)
 
 action = args.mode
 ACTIONS[action].run(args)
