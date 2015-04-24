@@ -24,10 +24,15 @@ import os.path
 from gwpy.utils import gprint
 from gwpy.segments import (Segment, SegmentList, DataQualityFlag)
 
+from gwsumm.data import get_channel
+from gwsumm.segments import get_segments
+from gwsumm.state import (generate_all_state, SummaryState)
+from gwsumm.triggers import get_triggers
+from gwsumm.utils import vprint
+
 from .. import version
-from ..segments import get_segments
-from ..triggers import get_triggers
 from ..core import evaluate_flag
+from ..tabs import FlagTab
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
@@ -56,58 +61,30 @@ def add_command_line_arguments(topparser, parents=[]):
     return parser
 
 
-def run(args):
+def run(args, config):
     """Execute the flag study
     """
-    # get analysis segments
-    span = SegmentList([Segment(float(args.gps_start_time),
-                                float(args.gps_end_time))])
-    if args.verbose:
-        gprint("Getting analysis segments...", end=' ')
-    if args.analysis_flag or args.analysis_segments:
-        analysis = get_segments(args.analysis_flag, span,
-                                cache=args.analysis_segments,
-                                url=args.segment_url)
+    if (args.label == 'Vetoes' and len(args.flag) == 1 and
+            not os.path.isfile(args.flag[0])):
+        args.label = args.flag[0]
+
+    vprint("\n-------------------------------------------------\n")
+    vprint("Processing %s\n" % args.label)
+
+    span = Segment(args.gps_start_time, args.gps_end_time)
+
+    # format analysis state
+    if args.analysis_flag:
+        state = SummaryState(args.analysis_flag, definition=args.analysis_flag,
+                             known=[span])
+        state.fetch(config=config)
     else:
-        analysis = DataQualityFlag(active=span, known=span)
-    if args.verbose:
-        gprint("Done, %.2f%% livetime."
-               % (abs(analysis.active) / abs(span) * 100))
+        state = generate_all_state(*span)
 
-    # get flag segments
-    if args.verbose:
-        gprint("Getting veto segments...", end=' ')
-    if args.flag and os.path.isfile(args.flag[0]):
-        allsegs = get_segments(None, analysis, url=args.segment_url,
-                               cache=args.flag)
-    else:
-        segs = get_segments(args.flag, analysis, url=args.segment_url)
-        if args.intersection:
-            allsegs = segs.intersection()
-        else:
-            allsegs = segs.union()
-    if args.verbose:
-        gprint("Done.")
-
-    # get triggers
-    if args.trigger_file or args.auto_locate_triggers:
-        if args.verbose:
-            gprint("Getting triggers...", end=' ')
-        triggers = get_triggers(args.channel, args.trigger_format, analysis,
-                                cache=args.trigger_file)
-        if args.verbose:
-            gprint("Done, %d triggers found." % len(triggers))
-    else:
-        triggers = None
-
-    # apply metrics
-    if args.verbose:
-        gprint("Evaluating metrics...", end=' ')
-    results, after = evaluate_flag(allsegs, triggers=triggers,
-                                   metrics=args.metrics, injections=None)
-
-    if args.verbose:
-        gprint("Done.\n\nMetric results\n--------------")
-
-    for metric, result in results.iteritems():
-        print('%s: %s' % (str(metric), result))
+    tab = FlagTab(args.label, args.gps_start_time, args.gps_end_time,
+                  args.flag, states=[state], metrics=args.metrics,
+                  channel=args.channel, etg=args.trigger_format,
+                  intersection=args.intersection)
+    tab.index = 'index.html'
+    tab.process(config=config)
+    tab.write_html(ifo='VET')

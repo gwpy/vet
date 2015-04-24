@@ -40,6 +40,7 @@ from gwpy.segments import (DataQualityFlag, DataQualityDict)
 from gwpy.time import (to_gps, Time)
 
 from gwsumm import globalv
+from gwsumm.config import GWSummConfigParser
 from gwsumm.utils import vprint
 
 from gwpy.toolkits.vet import version
@@ -147,6 +148,14 @@ args.metrics = map(get_metric, args.metrics)
 
 globalv.VERBOSE = args.verbose
 
+# construct config
+config = GWSummConfigParser()
+config.add_section('general')
+config.set('general', 'gps-start-time', str(int(args.gps_start_time)))
+config.set('general', 'gps-end-time', str(int(args.gps_end_time)))
+config.add_section('segment-database')
+config.set('segment-database', 'url', args.segment_url)
+
 # set output directory
 if args.html_dir:
     if not os.path.isdir(args.html_dir):
@@ -154,4 +163,10 @@ if args.html_dir:
     os.chdir(args.html_dir)
 
 action = args.mode
-ACTIONS[action].run(args)
+ACTIONS[action].run(args, config)
+
+vprint("""
+------------------------------------------------------------------------------
+All done. Thank you.
+------------------------------------------------------------------------------
+""")
