@@ -28,6 +28,7 @@ from gwpy.segments import DataQualityFlag
 from gwpy.table.utils import get_row_value
 
 from . import version
+from .triggers import veto
 from .metric import Metric
 from .metric.registry import get_metric
 
@@ -35,7 +36,8 @@ __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
 
 
-def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None):
+def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
+                  vetotag=''):
     """Evaluate the performance of a set of a `~gwpy.segments.DataQualityFlag`
 
     Parameters
@@ -62,11 +64,7 @@ def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None):
 
     # apply vetoes to triggers
     if triggers is not None:
-        after = triggers.copy()
-        for t in triggers:
-            if float(get_row_value(t, 'time')) in flag.active:
-                continue
-            after.append(t)
+        after = veto(triggers, flag, tag=vetotag)
     else:
         after = None
 
