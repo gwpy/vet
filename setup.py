@@ -310,9 +310,11 @@ setup(name=DISTNAME,
           'gwpy',
           'astropy',
           'decorator',
+          'gwsumm',
       ],
       install_requires=[
           'gwpy',
+          'gwsumm',
       ],
       extras_require={
           'doc': ['sphinx',
