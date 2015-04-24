@@ -24,6 +24,7 @@ from __future__ import division
 import decorator
 
 import numpy
+from scipy.stats import poisson
 
 from astropy.units import Unit
 
@@ -36,6 +37,8 @@ from .registry import register_metric
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
+
+SAFETY_THRESHOLD = 5e-3
 
 
 # -----------------------------------------------------------------------------
@@ -152,3 +155,47 @@ def use_percentage(segments, before, after=None):
 
 register_metric(Metric(
     use_percentage, 'Use percentage', unit=Unit('%')))
+
+
+@_use_dqflag
+def safety(segments, injections, threshold=SAFETY_THRESHOLD):
+    """The safety of these segments with respect to vetoing GW signals
+
+    The 'safety' of a given segment list is determined by comparing the
+    number of coincidences between the veto segments and injection segments
+    to random chance.
+
+    A segment list is returned as safe (`True`) if the Poisson significance
+    of the number of injection coincidences exceeds the threshold (default
+    5e-3).
+
+    Parameters
+    ----------
+    segments : `~gwpy.segments.DataQualityFlag`, `~glue.segments.segmentlist`
+        the set of segments to test
+    injections : `~glue.segments.segmentlist`
+        the set of injections against which to compare
+    threshold : `float`, optional, default: 5e-3
+        the Poission significance value above which a set of segments is
+        declared unsafe
+
+    Returns
+    -------
+    safe : `bool`
+        the boolean statement of whether this segment list is safe (`True`)
+        or not (`False`)
+    """
+    if not isinstance(injections, DataQualityFlag):
+        injections = DataQualityFlag(active=injections)
+    # segment info
+    deadtime = float(abs(segments.active))
+    livetime = float(abs(segments.known))
+    # injection coincidence
+    numveto = len([inj for inj in injections.active if
+                   inj.intersects(segments)])
+    numexp = len(injections) * deadtime / livetime
+    # statistical significance
+    prob = 1 - poisson.cdf(numveto - 1, numexp)
+    return prob < threshold
+
+register_metric(Metric(safety, 'Safety', unit=None))
