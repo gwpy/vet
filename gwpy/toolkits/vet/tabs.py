@@ -30,13 +30,12 @@ from gwsumm.segments import get_segments
 from gwsumm.triggers import (get_triggers, get_etg_table)
 from gwsumm.tabs import get_tab, register_tab
 from gwsumm.html import (data_table, markup)
-from gwsumm.plot import get_plot
+from gwsumm.plot import (get_plot, get_column_label)
 from gwsumm.utils import vprint
 from gwsumm.state import ALLSTATE
 
 from . import version
 from .core import evaluate_flag
-from .plot import *
 from .triggers import re_meta
 from .metric import get_metric
 
