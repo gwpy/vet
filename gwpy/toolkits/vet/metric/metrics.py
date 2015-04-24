@@ -95,7 +95,10 @@ def efficiency(segments, before, after=None):
     """
     if after is None:
         after = before.veto(segments.active)
-    return (len(before) - len(after)) / len(after) * 100
+    try:
+        return (len(before) - len(after)) / len(after) * 100
+    except ZeroDivisionError:
+        return 0.
 
 register_metric(Metric(efficiency, 'Efficiency', unit=Unit('%')))
 
@@ -123,7 +126,10 @@ def efficiency_over_deadtime(segments, before, after=None):
     This metric function just applies the `efficiency` and `deadtime` metric
     functions and divides one by the other.
     """
-    return efficiency(segments, before, after=after) / deadtime(segments)
+    try:
+        return efficiency(segments, before, after=after) / deadtime(segments)
+    except ZeroDivisionError:
+        return 0.
 
 register_metric(Metric(efficiency_over_deadtime, 'Efficiency/Deadtime',
                        unit=None))
@@ -139,7 +145,10 @@ def use_percentage(segments, before, after=None):
         if numpy.logical_and(times >= float(seg[0]),
                              times < float(seg[1])).any():
             used += 1
-    return used / len(segments.active) * 100
+    try:
+        return used / len(segments.active) * 100
+    except ZeroDivisionError:
+        return 0.
 
 register_metric(Metric(
     use_percentage, 'Use percentage', unit=Unit('%')))
