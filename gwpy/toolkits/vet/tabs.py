@@ -82,6 +82,7 @@ class FlagTab(get_tab('default')):
                  metrics=[],
                  channel=None, etg=None,
                  intersection=False,
+                 labels=None,
                  plotdir=os.curdir, states=list([ALLSTATE]), **kwargs):
         if len(flags) == 0:
             flags = [name]
@@ -90,6 +91,7 @@ class FlagTab(get_tab('default')):
         super(FlagTab, self).__init__(
             name, start, end, states=states, **kwargs)
         self.flags = list(flags)
+        self.labels = labels or map(str, self.flags)
         self.metrics = metrics
         self.channel = get_channel(channel)
         self.etg = etg
@@ -117,6 +119,14 @@ class FlagTab(get_tab('default')):
             'metrics',
             [get_metric(f.strip('\n ')) for f in
                  config.get(section, 'metrics').split(',')])
+        # get labels
+        try:
+            kwargs.setdefault(
+                'labels',
+                [f.strip('\n ') for f in
+                     config.get(section, 'labels').split(',')])
+        except NoOptionError:
+            pass
         # get ETG params
         try:
             kwargs.setdefault(
@@ -257,12 +267,13 @@ class FlagTab(get_tab('default')):
             }
             if len(self.flags) == 1:
                 sp = get_plot('segments')(self.flags, self.start, self.end,
-                                          outdir=plotdir, **segargs)
+                                          outdir=plotdir, labels=self.labels,
+                                          **segargs)
             else:
                 sp = get_plot('segments')(
                     [self.metaflag] + self.flags, self.start, self.end,
                     labels=([self.intersection and 'Intersection' or 'Union'] +
-                            self.flags), outdir=plotdir, **segargs)
+                            self.labels), outdir=plotdir, **segargs)
             self.plots.append(sp)
 
 
@@ -333,6 +344,9 @@ class FlagTab(get_tab('default')):
                                           'data-parent': '#accordion'})
             if i == 0:
                 post.h4(self.intersection and 'Intersection' or 'Union',
+                        class_='panel-title')
+            elif self.labels[i-1] != str(flag):
+                post.h4('%s (%s)' % (flag.name, self.labels[i-1]),
                         class_='panel-title')
             else:
                 post.h4(flag.name, class_='panel-title')
