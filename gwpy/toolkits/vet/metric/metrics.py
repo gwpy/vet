@@ -22,6 +22,7 @@
 from __future__ import division
 
 import decorator
+import operator
 
 import numpy
 from scipy.stats import poisson
@@ -33,7 +34,7 @@ from gwpy.table.utils import get_table_column
 
 from .. import version
 from . import Metric
-from .registry import register_metric
+from .registry import (get_metric, register_metric)
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
@@ -46,7 +47,7 @@ SAFETY_THRESHOLD = 5e-3
 
 @decorator.decorator
 def _use_dqflag(f, segments, *args, **kwargs):
-    """Decorator a method to convert incoming segments into `DataQualityFlag`.
+    """Decorator a method to convert incoming segments into `DataQualityFlag`
     """
     if not isinstance(segments, DataQualityFlag):
         segments = DataQualityFlag(active=segments)
@@ -58,7 +59,7 @@ def _use_dqflag(f, segments, *args, **kwargs):
 
 @_use_dqflag
 def deadtime(segments):
-    """The active duration of a given set of segments.
+    """The active duration of a given set of segments
 
     Parameters
     ----------
@@ -80,7 +81,7 @@ register_metric(Metric(deadtime, 'Deadtime', unit=Unit('%')))
 
 @_use_dqflag
 def efficiency(segments, before, after=None):
-    """The decimal fraction of events vetoed by the given segments.
+    """The decimal fraction of events vetoed by the given segments
 
     Parameters
     ----------
@@ -108,7 +109,7 @@ register_metric(Metric(efficiency, 'Efficiency', unit=Unit('%')))
 
 @_use_dqflag
 def efficiency_over_deadtime(segments, before, after=None):
-    """The ratio of efficiency to deadtime.
+    """The ratio of efficiency to deadtime
 
     Parameters
     ----------
@@ -233,3 +234,41 @@ for column in ['snr', 'new_snr', 'rho']:
     register_metric(
         Metric(loudest_event_factory(column),
                'Loudest event by %s' % column, unit=Unit('%')))
+
+
+# -- generic factory method ---------------------
+
+OPERATORS = {
+    '<': operator.lt,
+    '<=': operator.le,
+    '=': operator.eq,
+    '>=': operator.ge,
+    '>': operator.gt,
+    '==': operator.is_,
+    '!=': operator.is_not,
+}
+
+
+def metric_by_column_value_factory(metric, column, threshold, operator='>=',
+                                   name=None):
+    metric = get_metric(metric)
+    try:
+        op = OPERATORS[operator]
+    except KeyError as e:
+        e.args = ("Cannot parse operator %r, choose one of : %s"
+                  % (operator, ', '.join(OPERATORS.keys())))
+
+    @_use_dqflag
+    def metric_by_column_value(segments, before, after=None):
+        b = op(get_table_column(before, column.lower()), threshold)
+        if after is None:
+            a = None
+        else:
+            a = op(get_table_column(after, column.lower()), threshold)
+        return metric(segments, b, after=a)
+
+    tag = ' (%s %s %s)' % (column, operator, threshold)
+    metric_by_column_value.__doc__ = metric.description.splitlines()[0] + tag
+    if name is None:
+        name = metric.name + tag
+    return register_metric(Metric(metric_by_column_value, name))

@@ -30,6 +30,13 @@ __version__ = version.version
 
 _METRICS = {}
 
+REGEX_METRIC_FACTORY = re.compile(
+    '(?P<metric>(.*))\|(\s+)?'  # match metric name
+    '(?P<column>\w+)(\s+)?'  # match column name
+    '(?P<operator>[<>=!]+)(\s+)?'  # match operator
+    '(?P<value>(.*))\Z'  # match value (arbitrary text)
+)
+
 
 def register_metric(metric, name=None, force=False):
     """Register a new `Metric` to the given ``name``
@@ -44,6 +51,11 @@ def register_metric(metric, name=None, force=False):
     force : `bool`, default: `False`
         overwrite existing registration for this type.
 
+    Returns
+    -------
+    metric : `Metric`
+        the input metric as given (for ease of function chaining)
+
     Raises
     ------
     ValueError
@@ -56,6 +68,7 @@ def register_metric(metric, name=None, force=False):
     else:
         raise ValueError("Plot %r has already been registered to the %s "
                          "class" % (name, metric.__name__))
+    return metric
 
 
 def get_metric(name):
@@ -71,7 +84,15 @@ def get_metric(name):
     try:
         return _METRICS[name.lower()]
     except KeyError:
-        raise ValueError("No Metric registered with name %r" % name)
+        try:
+            match = REGEX_METRIC_FACTORY.match(name).groupdict()
+        except AttributeError:
+            raise ValueError("No Metric registered with name %r" % name)
+        else:
+            from .metrics import metric_by_column_value_factory
+            return metric_by_column_value_factory(
+                match['metric'].rstrip(), match['column'],
+                float(match['value']), match['operator'], name=name)
 
 
 def get_all_metrics():
