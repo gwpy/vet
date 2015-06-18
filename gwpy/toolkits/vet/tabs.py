@@ -261,8 +261,7 @@ class FlagTab(get_tab('default')):
             # -- configure segment plot
             segargs = {
                 'state': state,
-                'known': {'hatch': 'x', 'edgecolor': 'lightgray',
-                          'fill': False},
+                'known': {'alpha': 0.1, 'facecolor': 'lightgray'},
                 'color': 'red',
             }
             if len(self.flags) == 1:
