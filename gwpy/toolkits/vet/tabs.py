@@ -21,6 +21,8 @@
 
 import os
 
+from glue.lal import Cache
+
 from gwpy.plotter.tex import label_to_latex
 from gwpy.time import Time
 
@@ -83,6 +85,7 @@ class FlagTab(get_tab('default')):
                  channel=None, etg=None,
                  intersection=False,
                  labels=None,
+                 segmentfile=None,
                  plotdir=os.curdir, states=list([ALLSTATE]), **kwargs):
         if len(flags) == 0:
             flags = [name]
@@ -91,6 +94,7 @@ class FlagTab(get_tab('default')):
         super(FlagTab, self).__init__(
             name, start, end, states=states, **kwargs)
         self.flags = list(flags)
+        self.segmentfile = segmentfile
         self.labels = labels or map(str, self.flags)
         self.metrics = metrics
         self.channel = get_channel(channel)
@@ -110,10 +114,11 @@ class FlagTab(get_tab('default')):
     def from_ini(cls, config, section, **kwargs):
         """Parse a new tab from a `ConfigParser` section
         """
-        # get list of flags
+        # get list of flags and source segmentfile
         kwargs.setdefault(
-            'flags',
-            [f.strip('\n ') for f in config.get(section, 'flags').split(',')])
+            'flags', [f.strip('\n ') for f in
+                      config.get(section, 'flags').split(',')])
+        kwargs.setdefault('segmentfile', config.get(section, 'segmentfile'))
         # get list of metrics
         kwargs.setdefault(
             'metrics',
@@ -278,13 +283,14 @@ class FlagTab(get_tab('default')):
 
     def process_state(self, state, *args, **kwargs):
         # first get all of the segments
-        for flag in self.flags:
-            # assume a 2-tuple is a (name, segmentfile) pair
-            if isinstance(flag, (list, tuple)):
-                flag, source = flag
-                get_segments(flag, state, config=kwargs.get('config', None),
-                             cache=source, return_=False)
-        segs = get_segments(self.metaflag, state, kwargs.get('config', None))
+        if self.segmentfile:
+            get_segments(self.flags, state, config=kwargs.get('config', None),
+                         cache=self.segmentfile, return_=False)
+            segs = get_segments(self.metaflag, state,
+                                kwargs.get('config', None), query=False)
+        else:
+            segs = get_segments(self.metaflag, state,
+                                kwargs.get('config', None))
         # then get all of the triggers
         before = get_triggers(str(self.channel), self.etg, state)
         # then apply all of the metrics
@@ -295,6 +301,7 @@ class FlagTab(get_tab('default')):
         for metric, val in self.results[state].iteritems():
             vprint('        %s: %s\n' % (metric, val))
         # then pass to super to make the plots
+        kwargs['trigcache'] = Cache()
         return super(FlagTab, self).process_state(state, *args, **kwargs)
 
     def write_state_html(self, state):
