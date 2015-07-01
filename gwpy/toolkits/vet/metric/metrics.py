@@ -249,6 +249,14 @@ OPERATORS = {
 }
 
 
+def get_reduced_column(table, column, op, threshold):
+    """Return a masked version of a column with an operator and threshold
+    """
+    data = get_table_column(table, column)
+    mask = op(data, threshold)
+    return data[mask]
+
+
 def metric_by_column_value_factory(metric, column, threshold, operator='>=',
                                    name=None):
     metric = get_metric(metric)
@@ -260,15 +268,16 @@ def metric_by_column_value_factory(metric, column, threshold, operator='>=',
 
     @_use_dqflag
     def metric_by_column_value(segments, before, after=None):
-        b = op(get_table_column(before, column.lower()), threshold)
+        b = get_reduced_column(before, column.lower(), op, threshold)
         if after is None:
             a = None
         else:
-            a = op(get_table_column(after, column.lower()), threshold)
+            a = get_reduced_column(after, column.lower(), op, threshold)
         return metric(segments, b, after=a)
 
     tag = ' (%s %s %s)' % (column, operator, threshold)
     metric_by_column_value.__doc__ = metric.description.splitlines()[0] + tag
     if name is None:
         name = metric.name + tag
-    return register_metric(Metric(metric_by_column_value, name))
+    return register_metric(Metric(metric_by_column_value, name,
+                                  unit=metric.unit))
