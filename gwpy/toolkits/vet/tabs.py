@@ -86,6 +86,7 @@ class FlagTab(get_tab('default')):
                  intersection=False,
                  labels=None,
                  segmentfile=None,
+                 minseglength=0,
                  plotdir=os.curdir, states=list([ALLSTATE]), **kwargs):
         if len(flags) == 0:
             flags = [name]
@@ -95,6 +96,7 @@ class FlagTab(get_tab('default')):
             name, start, end, states=states, **kwargs)
         self.flags = list(flags)
         self.segmentfile = segmentfile
+        self.minseglength = minseglength
         self.labels = labels or map(str, self.flags)
         self.metrics = metrics
         self.channel = get_channel(channel)
@@ -296,7 +298,7 @@ class FlagTab(get_tab('default')):
         # then apply all of the metrics
         self.results[state] = evaluate_flag(
             segs, triggers=before, metrics=self.metrics, injections=None,
-            vetotag=str(state))[0]
+            minduration=self.minseglength, vetotag=str(state))[0]
         vprint("    Veto evaluation results:\n")
         for metric, val in self.results[state].iteritems():
             vprint('        %s: %s\n' % (metric, val))
