@@ -37,7 +37,7 @@ __version__ = version.version
 
 
 def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
-                  vetotag=''):
+                  minduration=0, vetotag=''):
     """Evaluate the performance of a set of a `~gwpy.segments.DataQualityFlag`
 
     Parameters
@@ -51,6 +51,8 @@ def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
     injections : `~glue.ligolw.table.Table`, `~gwpy.segments.SegmentList`, optional
         a list of injections, or injection segments, against which to test
         flag safety
+    minduration : `float`, optional
+        the minimum duration of post-veto segments, if applicable, default: 0
 
     Returns
     -------
@@ -61,6 +63,13 @@ def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
     # format as flag
     if not isinstance(flag, DataQualityFlag):
         flag = DataQualityFlag(active=flag)
+    else:
+        flag = flag.copy()
+    # get inverse of veto segments
+    if minduration:
+        post = type(flag.known)([s for s in (flag.known - flag.active)
+                             if float(abs(s)) >= minduration])
+        flag.active = flag.known - post
 
     # apply vetoes to triggers
     if triggers is not None:
