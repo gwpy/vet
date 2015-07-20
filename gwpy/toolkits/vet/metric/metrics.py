@@ -23,6 +23,7 @@ from __future__ import division
 
 import decorator
 import operator
+from itertools import izip
 
 import numpy
 from scipy.stats import poisson
@@ -249,12 +250,14 @@ OPERATORS = {
 }
 
 
-def get_reduced_column(table, column, op, threshold):
+def get_reduced_table(table, column, op, threshold):
     """Return a masked version of a column with an operator and threshold
     """
     data = get_table_column(table, column)
     mask = op(data, threshold)
-    return data[mask]
+    new = table.copy()
+    new.extend(t for t, m in izip(table, mask) if m)
+    return new
 
 
 def metric_by_column_value_factory(metric, column, threshold, operator='>=',
@@ -268,11 +271,11 @@ def metric_by_column_value_factory(metric, column, threshold, operator='>=',
 
     @_use_dqflag
     def metric_by_column_value(segments, before, after=None):
-        b = get_reduced_column(before, column.lower(), op, threshold)
+        b = get_reduced_table(before, column.lower(), op, threshold)
         if after is None:
             a = None
         else:
-            a = get_reduced_column(after, column.lower(), op, threshold)
+            a = get_reduced_table(after, column.lower(), op, threshold)
         return metric(segments, b, after=a)
 
     tag = ' (%s %s %s)' % (column, operator, threshold)
