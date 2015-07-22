@@ -300,7 +300,9 @@ class FlagTab(ParentTab):
                                 segdb_error=kwargs.get('segdb_error', 'raise'))
         # then get all of the triggers
         if self.channel:
-            before = get_triggers(str(self.channel), self.etg, state)
+            cache = kwargs.pop('trigcache', None)
+            before = get_triggers(str(self.channel), self.etg, state,
+                                  cache=cache)
         else:
             before = None
         # then apply all of the metrics
