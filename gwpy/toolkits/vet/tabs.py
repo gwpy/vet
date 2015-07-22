@@ -120,7 +120,10 @@ class FlagTab(get_tab('default')):
         kwargs.setdefault(
             'flags', [f.strip('\n ') for f in
                       config.get(section, 'flags').split(',')])
-        kwargs.setdefault('segmentfile', config.get(section, 'segmentfile'))
+        try:
+            kwargs.setdefault('segmentfile', config.get(section, 'segmentfile'))
+        except NoOptionError:
+            pass
         # get list of metrics
         kwargs.setdefault(
             'metrics',
