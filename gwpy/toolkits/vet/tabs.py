@@ -286,7 +286,6 @@ class FlagTab(ParentTab):
                             self.labels), outdir=plotdir, **segargs)
             self.plots.append(sp)
 
-
     def process_state(self, state, *args, **kwargs):
         # first get all of the segments
         if self.segmentfile:
