@@ -183,10 +183,10 @@ class FlagTab(ParentTab):
         before = get_channel(str(self.channel))
         for state in self.states:
             if self.channel:
-                after = get_channel('%s-%s%s' % (
-                    str(before), re_meta.sub('-', self.metaflag), str(state)))
-                vetoed = get_channel('%s@%s%s' % (
-                    str(before), re_meta.sub('-', self.metaflag), str(state)))
+                after = get_channel('%s#%s' % (
+                    str(before), re_meta.sub('-', self.metaflag)))
+                vetoed = get_channel('%s@%s' % (
+                    str(before), re_meta.sub('-', self.metaflag)))
                 # -- configure trigger plots
                 if 'inspiral' in get_etg_table(self.etg).tableName:
                     column = 'mchirp'
