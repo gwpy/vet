@@ -40,8 +40,8 @@ def veto(table, flag, tag=''):
     """Apply a veto to a set of event table and return survivors
     """
     fname = re_meta.sub('-', flag.name)
-    alabel = '%s-%s%s' % (table.channel, fname, tag)
-    vlabel = '%s@%s%s' % (table.channel, fname, tag)
+    alabel = '%s#%s,%s' % (table.channel, fname, tag)
+    vlabel = '%s@%s,%s' % (table.channel, fname, tag)
     akey = '%s,%s' % (alabel, table.etg.lower())
     vkey = '%s,%s' % (vlabel, table.etg.lower())
     if alabel in globalv.TRIGGERS:
