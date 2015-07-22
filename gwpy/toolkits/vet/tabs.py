@@ -299,7 +299,10 @@ class FlagTab(ParentTab):
                                 kwargs.get('config', None),
                                 segdb_error=kwargs.get('segdb_error', 'raise'))
         # then get all of the triggers
-        before = get_triggers(str(self.channel), self.etg, state)
+        if self.channel:
+            before = get_triggers(str(self.channel), self.etg, state)
+        else:
+            before = None
         # then apply all of the metrics
         self.results[state] = evaluate_flag(
             segs, triggers=before, metrics=self.metrics, injections=None,
