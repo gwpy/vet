@@ -44,8 +44,10 @@ from .metric import get_metric
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
 
+ParentTab = get_tab('default')
 
-class FlagTab(get_tab('default')):
+
+class FlagTab(ParentTab):
     """Tab for analysing veto performance
 
     Parameters
@@ -106,11 +108,11 @@ class FlagTab(get_tab('default')):
             self.metaflag = '&'.join(map(str, self.flags))
         else:
             self.metaflag = '|'.join(map(str, self.flags))
-        # and set up some plots
-        if not self.plots and not 'plots' in kwargs:
-            self.init_plots(plotdir=plotdir)
         # make space for the results
         self.results = {}
+        # configure default plots
+        if not len(self.plots):
+            self.init_plots(plotdir=plotdir)
 
     @classmethod
     def from_ini(cls, config, section, **kwargs):
@@ -160,8 +162,7 @@ class FlagTab(get_tab('default')):
                 else:
                     kwargs['intersection'] = False
         # make tab and return
-        new = super(FlagTab, cls).from_ini(config, section, plots=[], **kwargs)
-        new.init_plots(plotdir=kwargs.get('plotdir', os.curdir))
+        new = super(ParentTab, cls).from_ini(config, section, **kwargs)
         return new
 
     def init_plots(self, plotdir=os.curdir):
