@@ -293,9 +293,11 @@ class FlagTab(ParentTab):
                          cache=self.segmentfile, return_=False)
             segs = get_segments(self.metaflag, state,
                                 kwargs.get('config', None), query=False)
+            kwargs['segmentcache'] = Cache()
         else:
             segs = get_segments(self.metaflag, state,
-                                kwargs.get('config', None))
+                                kwargs.get('config', None),
+                                segdb_error=kwargs.get('segdb_error', 'raise'))
         # then get all of the triggers
         before = get_triggers(str(self.channel), self.etg, state)
         # then apply all of the metrics
