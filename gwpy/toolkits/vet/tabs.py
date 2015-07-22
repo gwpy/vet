@@ -101,7 +101,7 @@ class FlagTab(ParentTab):
         self.minseglength = minseglength
         self.labels = labels or map(str, self.flags)
         self.metrics = metrics
-        self.channel = get_channel(channel)
+        self.channel = channel and get_channel(channel) or None
         self.etg = etg
         self.intersection = intersection
         if intersection:
