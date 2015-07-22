@@ -56,8 +56,9 @@ def veto(table, flag, tag=''):
                 vetoed.append(row)
             else:
                 after.append(row)
+        vetoed.segments = flag.active
+        after.segments = flag.known - flag.active
         for t, key in zip([after, vetoed], [akey, vkey]):
-            t.segments = flag.known
             t.channel = table.channel
             t.etg = table.etg
             globalv.TRIGGERS[key] = t
