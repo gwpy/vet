@@ -36,7 +36,7 @@ from gwsumm.plot import (get_plot, get_column_label)
 from gwsumm.utils import vprint
 from gwsumm.state import ALLSTATE
 
-from . import version
+from . import (version, etg)
 from .core import evaluate_flag
 from .triggers import re_meta
 from .metric import get_metric
@@ -179,7 +179,7 @@ class FlagTab(ParentTab):
         else:
             label = 'Union'
 
-        self.layout = (1, 2, 2, 1)
+        self.layout = [1,]
         before = get_channel(str(self.channel))
         for state in self.states:
             if self.channel:
@@ -188,46 +188,14 @@ class FlagTab(ParentTab):
                 vetoed = get_channel('%s@%s' % (
                     str(before), re_meta.sub('-', self.metaflag)))
                 # -- configure trigger plots
-                if 'inspiral' in get_etg_table(self.etg).tableName:
-                    column = 'mchirp'
-                    color = 'new_snr'
-                    logcolor = False
-                    clim = 6,10
-                else:
-                    column = 'peak_frequency'
-                    color = 'snr'
-                    logcolor = True
-                    clim = 3,50
-                histargs = {
-                    'title': 'Impact of %s (%s)' % (
-                        label_to_latex(self.name), self.etg),
-                    'labels': ['Before', 'After'],
-                    'color': ['red', (0.2, 0.8, 0.2)],
-                    'logx': True,
-                    'logy': True,
-                    'histtype': 'stepfilled',
-                    'alpha': 0.6,
-                    'weights': 1/float(abs(self.span)),
-                    'xscale': 'log',
-                    'bins': 100,
-                    'ybound': 1/float(abs(self.span)) * 0.5,
-                    'autoscalex_on': True,
-                    '_tight': True,
-                    'legend-borderaxespad': 0,
-                    'legend-bbox_to_anchor': (1.01, 1),
-                    'legend-loc': 'upper left',
-                }
+                params = etg.get_etg_parameters(self.etg)
                 glitchgramargs = {
                     'etg': self.etg,
                     'x': 'time',
-                    'y': column,
-                    'logy': True,
-                    'ylabel': get_column_label(column),
+                    'y': params['frequency'],
+                    'logy': params.get('frequency-log', True),
+                    'ylabel': get_column_label(params['frequency']),
                     'edgecolor': 'none',
-                    'labels': ['_', 'Vetoed'],
-                    'colors': ['lightblue', 'red'],
-                    'autoscaley_on': True,
-                    '_tight': True,
                     'legend-scatterpoints': 1,
                     'legend-borderaxespad': 0,
                     'legend-bbox_to_anchor': (1.01, 1),
@@ -238,36 +206,53 @@ class FlagTab(ParentTab):
                     [after, vetoed], self.start, self.end, state=state,
                     title='Impact of %s (%s)' % (
                         label_to_latex(self.name), self.etg),
-                    outdir=plotdir, **glitchgramargs))
+                    outdir=plotdir, labels=['_', 'Vetoed'],
+                    colors=['lightblue', 'red'], **glitchgramargs))
 
-                # plot SNR histogram
-                p = get_plot('trigger-histogram')(
+                # plot histograms
+                statistics = ['snr']
+                if params['det'] != params['snr']:
+                    statistics.append('det')
+                self.layout.append(len(statistics) + 1)
+                for column in statistics + ['frequency']:
+                    self.plots.append(get_plot('trigger-histogram')(
                         [before, after], self.start, self.end, state=state,
-                        column='snr', etg=self.etg,
-                        xlabel=get_column_label('snr'),
-                        outdir=plotdir, **histargs)
-                self.plots.append(p)
-                p = get_plot('trigger-histogram')(
-                        [before, after], self.start, self.end, state=state,
-                        column=column, etg=self.etg, outdir=plotdir,
-                        xlabel=get_column_label(column), **histargs)
-                self.plots.append(p)
+                        column=params[column], etg=self.etg, outdir=plotdir,
+                        title='Impact of %s (%s)' % (
+                            label_to_latex(self.name), self.etg),
+                        labels=['Before', 'After'],
+                        xlabel=params.get('%s-label' % column,
+                                          get_column_label(params[column])),
+                        color=['red', (0.2, 0.8, 0.2)],
+                        logx=params.get('%s-log' % column, True),
+                        logy=True,
+                        histtype='stepfilled', alpha=0.6,
+                        weights=1/float(abs(self.span)), bins=100,
+                        ybound=1/float(abs(self.span)) * 0.5, **{
+                            'legend-borderaxespad': 0,
+                            'legend-bbox_to_anchor': (1.01, 1),
+                            'legend-loc': 'upper left'}
+                    ))
 
                 # plot triggers before and after
-                glitchgramargs.update({
-                    'color': color,
-                    'clim': clim,
-                    'logcolor': logcolor,
-                    'colorlabel': get_column_label(color),
-                })
-                self.plots.append(get_plot('triggers')(
-                    [before], self.start, self.end, state=state,
-                    outdir=plotdir, **glitchgramargs))
-                self.plots.append(get_plot('triggers')(
-                    [after], self.start, self.end, state=state,
-                    title='After %s (%s)' % (
-                        label_to_latex(self.name), self.etg),
-                    outdir=plotdir, **glitchgramargs))
+                for stat in statistics:
+                    column = params[stat]
+                    glitchgramargs.update({
+                        'color': column,
+                        'clim': params.get('%s-limits' % stat, [3, 100]),
+                        'logcolor': params.get('%s-log' % stat, True),
+                        'colorlabel': params.get('%s-label' % stat,
+                                                 get_column_label(column)),
+                    })
+                    self.plots.append(get_plot('triggers')(
+                        [before], self.start, self.end, state=state,
+                        outdir=plotdir, **glitchgramargs))
+                    self.plots.append(get_plot('triggers')(
+                        [after], self.start, self.end, state=state,
+                        title='After %s (%s)' % (
+                            label_to_latex(self.name), self.etg),
+                        outdir=plotdir, **glitchgramargs))
+                    self.layout.append(2)
 
             # -- configure segment plot
             segargs = {
@@ -285,6 +270,7 @@ class FlagTab(ParentTab):
                     labels=([self.intersection and 'Intersection' or 'Union'] +
                             self.labels), outdir=plotdir, **segargs)
             self.plots.append(sp)
+            self.layout.append(1)
 
     def process_state(self, state, *args, **kwargs):
         # first get all of the segments
