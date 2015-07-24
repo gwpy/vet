@@ -84,7 +84,7 @@ class FlagTab(ParentTab):
     def __init__(self, name, start, end,
                  flags=[],
                  metrics=[],
-                 channel=None, etg=None,
+                 channel=None, etg=None, table=None,
                  intersection=False,
                  labels=None,
                  segmentfile=None,
@@ -103,6 +103,7 @@ class FlagTab(ParentTab):
         self.metrics = metrics
         self.channel = channel and get_channel(channel) or None
         self.etg = etg
+        self.table = table
         self.intersection = intersection
         if intersection:
             self.metaflag = '&'.join(map(str, self.flags))
@@ -147,6 +148,10 @@ class FlagTab(ParentTab):
             pass
         else:
             kwargs.setdefault('etg', config.get(section, 'event-generator'))
+            try:
+                kwargs.setdefault('table', config.get(section, 'event-table'))
+            except NoOptionError:
+                pass
         # get flag combine
         if len(kwargs['flags']) > 1 and 'intersection' not in kwargs:
             try:
@@ -288,7 +293,7 @@ class FlagTab(ParentTab):
         if self.channel:
             cache = kwargs.pop('trigcache', None)
             before = get_triggers(str(self.channel), self.etg, state,
-                                  cache=cache)
+                                  cache=cache, tablename=self.table)
         else:
             before = None
         # then apply all of the metrics
