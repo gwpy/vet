@@ -174,8 +174,8 @@ class FlagTab(ParentTab):
         """Configure the default list of plots for this tab
 
         This method configures a veto-trigger glitchgram, histograms of
-        before/after SNR and frequency/mchirp, before and after glitchgrams,
-        and a segment plot.
+        before/after SNR and frequency/template duration,
+        before and after glitchgrams, and a segment plot.
 
         This method is a mess, and should be re-written in a better way.
         """
