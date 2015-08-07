@@ -101,7 +101,7 @@ def efficiency(segments, before, after=None):
     if after is None:
         after = before.veto(segments.active)
     try:
-        return (len(before) - len(after)) / len(after) * 100
+        return (len(before) - len(after)) / len(before) * 100
     except ZeroDivisionError:
         return 0.
 
