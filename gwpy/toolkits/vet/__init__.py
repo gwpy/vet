@@ -25,6 +25,7 @@ from . import version
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __version__ = version.version
 
+from gwsumm.segments import get_segments
+from gwsumm.triggers import get_triggers
+
 from .metric import *
-from .segments import *
-from .triggers import *
