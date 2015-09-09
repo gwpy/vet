@@ -28,7 +28,7 @@ from gwpy.time import Time
 
 from gwsumm.config import NoOptionError
 from gwsumm.data import get_channel
-from gwsumm.segments import get_segments
+from gwsumm.segments import (get_segments, format_padding)
 from gwsumm.triggers import (get_triggers, get_etg_table)
 from gwsumm.tabs import get_tab, register_tab
 from gwsumm.html import (data_table, markup)
@@ -89,6 +89,7 @@ class FlagTab(ParentTab):
                  labels=None,
                  segmentfile=None,
                  minseglength=0,
+                 padding=(0, 0),
                  plotdir=os.curdir, states=list([ALLSTATE]), **kwargs):
         if len(flags) == 0:
             flags = [name]
@@ -105,6 +106,7 @@ class FlagTab(ParentTab):
         self.etg = etg
         self.table = table
         self.intersection = intersection
+        self.padding = format_padding(self.flags, padding)
         if intersection:
             self.metaflag = '&'.join(map(str, self.flags))
         else:
@@ -125,6 +127,12 @@ class FlagTab(ParentTab):
                       config.get(section, 'flags').split(',')])
         try:
             kwargs.setdefault('segmentfile', config.get(section, 'segmentfile'))
+        except NoOptionError:
+            pass
+        # get padding
+        try:
+            kwargs.setdefault(
+                'padding', [eval(config.get(section, 'padding'))])
         except NoOptionError:
             pass
         # get list of metrics
@@ -282,13 +290,14 @@ class FlagTab(ParentTab):
         if self.segmentfile:
             get_segments(self.flags, state, config=kwargs.get('config', None),
                          cache=self.segmentfile, return_=False)
-            segs = get_segments(self.metaflag, state,
-                                kwargs.get('config', None), query=False)
+            segs = get_segments(self.metaflag, state, padding=self.padding,
+                                config=kwargs.get('config', None), query=False)
             kwargs['segmentcache'] = Cache()
         else:
             segs = get_segments(self.metaflag, state,
                                 kwargs.get('config', None),
-                                segdb_error=kwargs.get('segdb_error', 'raise'))
+                                segdb_error=kwargs.get('segdb_error', 'raise'),
+                                padding=self.padding)
         # then get all of the triggers
         if self.channel:
             cache = kwargs.pop('trigcache', None)
@@ -346,7 +355,8 @@ class FlagTab(ParentTab):
         post.h2('Segment information')
         post.div(class_='panel-group', id="accordion")
         for i, flag in enumerate([self.metaflag] + self.flags):
-            flag = get_segments(flag, state.active, query=False).copy()
+            flag = get_segments(flag, state.active, query=False,
+                                padding=self.padding).copy()
             post.div(class_='panel well panel-primary')
             post.div(class_='panel-heading')
             post.a(href='#flag%d' % i, **{'data-toggle': 'collapse',
