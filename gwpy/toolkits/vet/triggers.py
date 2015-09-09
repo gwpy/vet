@@ -39,9 +39,8 @@ re_meta = re.compile('(\||:|\&)')
 def veto(table, flag, tag=''):
     """Apply a veto to a set of event table and return survivors
     """
-    fname = re_meta.sub('-', flag.name)
-    alabel = '%s#%s,%s' % (table.channel, fname, tag)
-    vlabel = '%s@%s,%s' % (table.channel, fname, tag)
+    alabel = veto_tag(table.channel, flag, tag)
+    vlabel = veto_tag(table.channel, flag, tag, mode='#')
     akey = '%s,%s' % (alabel, table.etg.lower())
     vkey = '%s,%s' % (vlabel, table.etg.lower())
     if alabel in globalv.TRIGGERS:
@@ -75,3 +74,48 @@ def vetoed(table, flag):
         if float(get_row_value(row, 'time')) in flag:
             after.append(row)
     return after
+
+
+def veto_tag(channel, flag, tag=None, mode='after'):
+    """Create a channel name tag for this veto
+
+    The output is a `str` with the following format:
+
+    <channel name><mode><flag name>,<tag>
+
+    where the 'mode' is one of
+
+    - '#': channel after excluding segments
+    - '@': channel after including segments
+
+    Parameters
+    ----------
+    channel : `str`
+        name of channel being vetoed
+    flag : `str`
+        name of flag doing the vetoing
+    tag : `str`
+        arbitrary tag for this veto operation, normally the name of the
+        enclosing IFO state
+    mode : `str`
+        one of 'after' or 'vetoed' defining which operation was performed
+
+        - 'after': require events outside flag segments
+        - 'vetoed': require events inside flag segments
+
+    Returns
+    -------
+    tag : `str`
+        tag string as described above
+    """
+    if mode == 'after':
+        op = '#'
+    else:
+        op = '@'
+    if isinstance(flag, DataQualityFlag):
+        flag = flag.name
+    fname = re_meta.sub('-', str(flag))
+    if tag is None:
+        return '%s%s%s' % (channel, op, fname)
+    else:
+        return '%s%s%s,%s' % (channel, op, fname, tag)

@@ -38,7 +38,7 @@ from gwsumm.state import ALLSTATE
 
 from . import (version, etg)
 from .core import evaluate_flag
-from .triggers import re_meta
+from .triggers import (re_meta, veto_tag)
 from .metric import get_metric
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
@@ -196,10 +196,10 @@ class FlagTab(ParentTab):
         before = get_channel(str(self.channel))
         for state in self.states:
             if self.channel:
-                after = get_channel('%s#%s' % (
-                    str(before), re_meta.sub('-', self.metaflag)))
-                vetoed = get_channel('%s@%s' % (
-                    str(before), re_meta.sub('-', self.metaflag)))
+                after = get_channel(veto_tag(before, self.metaflag,
+                                             mode='after'))
+                vetoed = get_channel(veto_tag(before, self.metaflag,
+                                              mode='vetoed'))
                 # -- configure trigger plots
                 params = etg.get_etg_parameters(self.etg)
                 glitchgramargs = {
