@@ -1,4 +1,4 @@
-.. currentmodule:: gwpy.toolkits.vet
+.. currentmodule:: gwvet
 
 #######
 Metrics
@@ -8,15 +8,15 @@ Veto performance is evaluated by designing metric functions that test the impact
 
 The simplest veto metric is the *deadtime*, the fractional amount of analysis time that is removed by applying a veto. High deadtime is normally a bad thing, as it reduces the amount of time remaining in which results can be found, but can be a good thing if the flag is also has high *efficiency*, meaning it removes a high fraction of background noise events.
 
-With GWpy VET, users can take their simple functional methods and convert them into :class:`~gwpy.toolkits.vet.Metric` objects, allowing easy evaluation of multiple metrics.
+With GWpy VET, users can take their simple functional methods and convert them into :class:`~gwvet.Metric` objects, allowing easy evaluation of multiple metrics.
 
 To that end, GWpy VET supplies a number of standard metrics:
 
 .. autosummary::
 
-   ~gwpy.toolkits.vet.metric.metrics.deadtime
-   ~gwpy.toolkits.vet.metric.metrics.efficiency
-   ~gwpy.toolkits.vet.metric.metrics.efficiency_over_deadtime
+   ~gwvet.metric.metrics.deadtime
+   ~gwvet.metric.metrics.efficiency
+   ~gwvet.metric.metrics.efficiency_over_deadtime
 
 These metrics can all be accessed via the registry.
 
@@ -32,7 +32,7 @@ To make life a little easier when working with both built-in and custom metrics,
 
 For example,
 
-   >>> from gwpy.toolkits.vet import get_metric
+   >>> from gwvet import get_metric
    >>> dt = get_metric('deadtime')
    >>> dt(mysegments)
 

@@ -47,7 +47,7 @@ def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
     triggers : `~glue.ligolw.table.Table`, optional
         the set of analysis event triggers against which to test
     metrics : `list`, optional
-        the list of `Metrics <~gwpy.toolkits.vet.Metric>`
+        the list of `Metrics <~gwvet.Metric>`
     injections : `~glue.ligolw.table.Table`, `~gwpy.segments.SegmentList`, optional
         a list of injections, or injection segments, against which to test
         flag safety

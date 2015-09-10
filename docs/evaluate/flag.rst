@@ -9,7 +9,7 @@ The simplest form of VET is for a single data-quality flag or segmentlist.
 
 The first thing we need to do is load some science segments to define the bounds of the study::
 
-    >>> from gwpy.toolkits.vet import get_segments
+    >>> from gwvet import get_segments
     >>> s6segdb = 'https://segdb.ligo.caltech.edu'
     >>> analysis = get_segments('H1:DMT-SCIENCE:1', ('Aug 19 2010', 'Aug 20 2010'), url=s6segdb)
 
@@ -19,14 +19,14 @@ Next we can fetch the segments for the `H1:DCH-SEISVETO_CBC:2` flag - capturing 
 
 Already we can evaluate the `deadtime` of these segments::
 
-    >>> from gwpy.toolkits.vet import get_metric
+    >>> from gwvet import get_metric
     >>> dt = get_metric('deadtime')
     >>> dt(vetoes)
     <Quantity 7.8425628803110392 %>
 
 For a more interesting test, we can load some triggers::
 
-    >>> from gwpy.toolkits.vet import get_triggers
+    >>> from gwvet import get_triggers
     >>> trigs = get_triggers('H1:LSC-DARM_ERR', 'omegadq', analysis, cache=['/home/detchar/public_html/S6/glitch/Wdata/966211215_966297615/clusters.txt'])
 
 and can evaluate some more metrics::

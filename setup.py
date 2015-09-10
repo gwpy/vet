@@ -61,13 +61,12 @@ else:
     cmdclass = {'build_sphinx': BuildDoc}
 
 # set basic metadata
-PACKAGENAME = 'vet'
-DISTNAME = 'gwpy-%s' % PACKAGENAME
+PACKAGENAME = 'gwvet'
 AUTHOR = 'Duncan Macleod'
 AUTHOR_EMAIL = 'duncan.macleod@ligo.org'
 LICENSE = 'GPLv3'
 
-VERSION_PY = os.path.join('gwpy', 'toolkits', PACKAGENAME, 'version.py')
+VERSION_PY = os.path.join(PACKAGENAME, 'version.py')
 
 
 # -----------------------------------------------------------------------------
@@ -130,9 +129,9 @@ class GitVersionMixin(object):
     def update_metadata(self):
         """Import package base and update distribution metadata
         """
-        from gwpy.toolkits import vet
-        self.distribution.metadata.version = vet.__version__
-        desc, longdesc = vet.__doc__.split('\n', 1)
+        import gwvet
+        self.distribution.metadata.version = gwvet.__version__
+        desc, longdesc = gwvet.__doc__.split('\n', 1)
         self.distribution.metadata.description = desc
         self.distribution.metadata.long_description = longdesc.strip('\n')
 
@@ -292,7 +291,7 @@ else:
 # -----------------------------------------------------------------------------
 # run setup
 
-setup(name=DISTNAME,
+setup(name=PACKAGENAME,
       provides=[PACKAGENAME],
       version=None,
       description=None,
@@ -324,7 +323,6 @@ setup(name=DISTNAME,
           'https://www.lsc-group.phys.uwm.edu/daswg/download/'
               'software/source/glue-1.46.tar.gz#egg=glue-1.46',
       ],
-      namespace_packages=['gwpy', 'gwpy.toolkits'],
       zip_safe=False,
       use_2to3=False,
       classifiers=[
