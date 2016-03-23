@@ -19,6 +19,11 @@
 """Utilities for segment access
 """
 
+try:
+    from cjson import decode as decode_json
+except ImportError:
+    from json import loads as decode_json
+
 from . import version
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
@@ -27,6 +32,8 @@ __version__ = version.version
 from astropy.io.registry import _get_valid_format
 
 from glue.lal import Cache
+
+from dqsegdb import urifunctions
 
 from gwpy.time import to_gps
 from gwpy.segments import *
@@ -97,3 +104,40 @@ def get_segments(flags, segments, cache=None,
             flag.known &= segments
             flag.active &= segments
         return segs
+
+
+def get_known_flags(start, end, url='https://segments.ligo.org', ifo=None,
+                    badonly=None):
+    """Return the list of all flags with known segments
+
+    Parameters
+    ----------
+    start : `int`
+        the GPS start time of the query
+    end : `int`
+        the GPS end time of the query
+    url : `str`, optional
+        the FQDN of the target segment database
+    ifo : `str`, optional
+        the prefix for the IFO, if `None` all flags are returned
+
+    Returns
+    -------
+    flags : `list` of `str`
+        a list of flag names (<ifo>:<name>:<version>) that are known by
+        the database in the given [start, end) interval
+    """
+    start = int(to_gps(start))
+    end = int(to_gps(end))
+    uri = '%s/report/known?s=%d&e=%d' % (url, start, end)
+    out = decode_json(urifunctions.getDataUrllib2(uri))
+    def select_flag(f):
+        if ifo is not None and f['ifo'] != ifo:
+            return False
+        if (badonly is not None and
+                f['metadata']['active_indicates_ifo_badness'] != badonly):
+            return False
+        return True
+
+    return sorted(['%s:%s:%d' % (f['ifo'], f['name'], f['version'])
+                   for f in out['results'] if select_flag(f)])
