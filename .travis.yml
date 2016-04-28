@@ -24,6 +24,7 @@ before_install:
   - pip install -q --upgrade pip
 
 install:
+  - pip install gwpy  # install gwpy first so gwsumm doesn't complain
   - pip install ${PRE} -r requirements.txt
 
 script:
