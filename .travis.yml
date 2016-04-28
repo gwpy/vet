@@ -7,6 +7,7 @@ addons:
       - libblas-dev  # scipy
       - liblapack-dev  # scipy
       - python-m2crypto  # glue
+      - swig  # M2Crypto
 
 matrix:
   include:
