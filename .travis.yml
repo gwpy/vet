@@ -25,7 +25,7 @@ before_install:
 
 install:
     # install glue first
-  - pip install http://software.ligo.org/lscsoft/source/glue-1.49.1.tar.gz
+  - pip install M2Crypto pykerberos python-cjson http://software.ligo.org/lscsoft/source/glue-1.49.1.tar.gz
     # then install gwpy
   - pip install gwpy
     # then install everything else
