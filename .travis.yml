@@ -24,7 +24,11 @@ before_install:
   - pip install -q --upgrade pip
 
 install:
-  - pip install gwpy  # install gwpy first so gwsumm doesn't complain
+    # install glue first
+  - pip install http://software.ligo.org/lscsoft/source/glue-1.49.1.tar.gz
+    # then install gwpy
+  - pip install gwpy
+    # then install everything else
   - pip install ${PRE} -r requirements.txt
 
 script:
