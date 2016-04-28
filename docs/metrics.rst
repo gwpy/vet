@@ -1,5 +1,7 @@
 .. currentmodule:: gwvet
 
+.. _metrics:
+
 #######
 Metrics
 #######
@@ -20,7 +22,9 @@ To that end, GWpy VET supplies a number of standard metrics:
 
 These metrics can all be accessed via the registry.
 
-.. rubric:: The registry
+------------
+The registry
+------------
 
 To make life a little easier when working with both built-in and custom metrics, GWpy VET uses a registry to map the human-readable names to their `Metric` objects:
 
@@ -42,6 +46,15 @@ Any user can define and register their own metrics from any function::
            return abs(segments)**2
    >>> register_metric(my_metric, 'squared deadtime')
 
-.. rubric:: The `Metric` object
+-----------------
+Available metrics
+-----------------
+
+.. automodule:: gwvet.metric.metrics
+
+-------------
+Reference/API
+-------------
 
 .. autoclass:: Metric
+

@@ -68,8 +68,6 @@ extensions = [
     'numpydoc',
     'sphinxcontrib.epydoc',
     'sphinxcontrib.programoutput',
-    'gwpy.utils.sphinx.autoclassapi',
-    'gwpy.utils.sphinx.directives',
 ]
 
 # customise autodoc
@@ -79,8 +77,7 @@ autodoc_default_flags = ['show-inheritance', 'members', 'inherited-members']
 # Epydoc extension config for GLUE
 # Can de-comment when GLUE is actually referenced in the documentation
 epydoc_mapping = {
-    'https://www.lsc-group.phys.uwm.edu/daswg/projects/glue/doc/':
-    [r'glue(\.|$)'],
+    'http://software.ligo.org/docs/glue/': [r'glue(\.|$)'],
 }
 
 # fix numpydoc autosummary
@@ -106,7 +103,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'GWVET'
-copyright = u'2014, Duncan Macleod, Max Isi'
+copyright = u'2016, Duncan Macleod'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -166,10 +163,9 @@ html_theme = 'bootstrap'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
+    'navbar_sidebarrel': True,
+    'bootswatch_theme': 'flatly',
     'source_link_position': None,
-    'navbar_site_name': "Contents",
-    'navbar_sidebarrel': False,
-    'navbar_pagenav': False,
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -210,7 +206,7 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-html_sidebars = {'**': ['localtoc.html', 'sourcelink.html', 'searchbox.html']}
+html_sidebars = {'**': ['localtoc.html', 'sourcelink.html']}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
