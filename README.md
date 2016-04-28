@@ -3,6 +3,8 @@ GWpy VET
 
 The Gravitational-wave Veto Evaluation and Testing suite (`python:gwvet`)
 
+[![Build Status](https://travis-ci.org/gwpy/vet.svg?branch=master)](https://travis-ci.org/gwpy/vet)
+
 Installation
 ------------
 Once you have cloned the repository, you can install by running
