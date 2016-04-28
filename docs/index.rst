@@ -4,26 +4,29 @@ GWpy VET: the Gravitational-Wave Veto Evaluation and Testing suite
 
 VET is a `GWpy <https://gwpy.github.io/>`_ toolbox for evaluating the performance of Data Quality (DQ) vetoes.
 
-What are Vetoes?
-================
+VET extends the functionality of `GWSumm <https://github.com/gwpy/gwsumm>`_ to provide HTML summaries of a number of key metrics useful in determining the effectualness of DQ products.
 
-Vetoes are used to excise times of known problems from analyses of laser interferometer gravitational-wave detector data, and are typically generated from studying correlations between excess noise in the gravitational-wave data readout, and auxiliary signals used to control and sense instrumental systems.
-These correlations are then recorded as time segments and recorded in a database.
+**Introduction:**
 
-These veto segments are then applied to gravitational-wave searches by excising the times identified, or removing event candidates from search results.
+.. toctree::
+   :maxdepth: 1
 
-All vetoes are defined before the gravitational-wave data are searched for potential astrophysical events, and so they present an unbiased way of cleaning bad data associated with known noise couplings.
-However, only those vetoes who perform well in cleaning data with as small a loss of analysis time as possible should be used, to maximise the potential for detection.
+   vetoes
+   install
 
-This software suite provides methods for data analysts to test new and existing data quality vetoes on training data, to decide which to use in the full analysis.
+**Command-line interface**
 
-Documentation
-=============
+VET is primarily accessed as a plugin on top of the ``gw_summary`` executable, requiring an INI-format configuration file. See these pages for more details:
 
 .. toctree::
    :maxdepth: 2
 
-   install
+   configuration
+   run
+
+**Developer API**
+
+.. toctree::
+   :maxdepth: 2
+
    metrics
-   evaluate/index
-   utilities

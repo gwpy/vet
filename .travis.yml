@@ -1,0 +1,40 @@
+language: python
+
+addons:
+  apt:
+    packages:
+      - gfortran  # scipy
+      - libblas-dev  # scipy
+      - liblapack-dev  # scipy
+      - python-m2crypto  # glue
+      - swig  # M2Crypto
+
+matrix:
+  include:
+    - python: 2.6
+      env: PRE=""
+    - python: 2.7
+      env: PRE=""
+    - python: 2.7
+      env: PRE="--pre"
+  allow_failures:
+    - python: 2.7
+      env: PRE="--pre"
+
+before_install:
+  - pip install -q --upgrade pip
+
+install:
+    # install glue first
+  - pip install M2Crypto pykerberos python-cjson http://software.ligo.org/lscsoft/source/glue-1.49.1.tar.gz
+    # then install gwpy
+  - pip install gwpy
+    # then install everything else
+  - pip install ${PRE} -r requirements.txt
+
+script:
+  - pip install .
+
+cache:
+  apt: true
+  pip: true

@@ -115,7 +115,7 @@ class GitVersionMixin(object):
         """Generate target file with versioning information from git VCS
         """
         log.info("generating %s" % pyfile)
-        import vcs
+        from gwpy import _version_helper as vcs
         gitstatus = vcs.GitStatus()
         try:
             with open(pyfile, 'w') as fobj:
@@ -310,6 +310,7 @@ setup(name=PACKAGENAME,
           'astropy',
           'decorator',
           'gwsumm',
+          'dqsegdb',
       ],
       install_requires=[
           'gwpy',
@@ -320,8 +321,8 @@ setup(name=PACKAGENAME,
                   'sphinxcontrib-programoutput'],
       },
       dependency_links=[
-          'https://www.lsc-group.phys.uwm.edu/daswg/download/'
-              'software/source/glue-1.46.tar.gz#egg=glue-1.46',
+          'http://software.ligo.org/lscsoft/source/glue-1.49.1.tar.gz',
+          'http://software.ligo.org/lscsoft/source/dqsegdb-1.2.2.tar.gz',
       ],
       zip_safe=False,
       use_2to3=False,
