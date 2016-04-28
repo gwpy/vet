@@ -1,0 +1,12 @@
+numpy>=1.7
+matplotlib>=1.5
+scipy
+gitpython
+jinja2
+astropy>=1.0
+http://software.ligo.org/lscsoft/source/glue-1.49.1.tar.gz
+http://software.ligo.org/lscsoft/source/dqsegdb-1.2.2.tar.gz
+gwpy
+git+https://github.com/gwpy/gwsumm.git
+sphinx [doc]
+sphinx-programoutput [doc]
