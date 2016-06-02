@@ -20,12 +20,9 @@
 
 """
 
-from .. import version
+from . import flag
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
-
-from . import flag
 
 ACTIONS = {
     'flag': flag,

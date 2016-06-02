@@ -36,13 +36,12 @@ from gwsumm.plot import (get_plot, get_column_label)
 from gwsumm.utils import vprint
 from gwsumm.state import ALLSTATE
 
-from . import (version, etg)
+from . import etg
 from .core import evaluate_flag
 from .triggers import (re_meta, veto_tag)
 from .metric import get_metric
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
 
 ParentTab = get_tab('default')
 

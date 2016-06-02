@@ -42,11 +42,9 @@ from astropy.units import (Quantity, Unit, dimensionless_unscaled)
 
 from gwpy.segments import DataQualityFlag
 
-from .. import version
 from .registry import (register_metric, get_all_metrics, get_metric)
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
 __all__ = ['Metric', 'register_metric', 'get_metric', 'get_all_metrics',
            'read_all', 'evaluate']
 

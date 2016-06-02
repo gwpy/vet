@@ -27,13 +27,11 @@ except ImportError:
 from gwpy.segments import DataQualityFlag
 from gwpy.table.utils import get_row_value
 
-from . import version
 from .triggers import veto
 from .metric import Metric
 from .metric.registry import get_metric
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
 
 
 def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,

@@ -24,11 +24,6 @@ try:
 except ImportError:
     from json import loads as decode_json
 
-from . import version
-
-__author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
-
 from astropy.io.registry import _get_valid_format
 
 from glue.lal import Cache
@@ -37,6 +32,8 @@ from dqsegdb import urifunctions
 
 from gwpy.time import to_gps
 from gwpy.segments import *
+
+__author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
 
 def get_segments(flags, segments, cache=None,

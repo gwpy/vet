@@ -43,12 +43,11 @@ from gwsumm import globalv
 from gwsumm.config import GWSummConfigParser
 from gwsumm.utils import vprint
 
-from gwvet import version
+from gwvet import __version__
 from gwvet.metric import get_metric
 from gwvet.cli import ACTIONS
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
 
 
 # -----------------------------------------------------------------------------
