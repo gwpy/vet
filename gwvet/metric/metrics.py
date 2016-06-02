@@ -33,12 +33,10 @@ from astropy.units import Unit
 from gwpy.segments import DataQualityFlag
 from gwpy.table.utils import get_table_column
 
-from .. import version
 from . import Metric
 from .registry import (get_metric, register_metric)
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
 
 SAFETY_THRESHOLD = 5e-3
 

@@ -22,10 +22,7 @@
 from __future__ import print_function
 import re
 
-from . import version
-
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
 
 from gwpy.table.utils import get_row_value
 from gwpy.segments import DataQualityFlag

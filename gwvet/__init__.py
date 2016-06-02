@@ -20,12 +20,14 @@
 
 """
 
-from . import version
+from ._version import get_versions
 
+__version__ = get_versions()['version']
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
 
 from gwsumm.segments import get_segments
 from gwsumm.triggers import get_triggers
 
 from .metric import *
+
+del get_versions

@@ -30,12 +30,10 @@ from gwsumm.state import (generate_all_state, SummaryState)
 from gwsumm.triggers import get_triggers
 from gwsumm.utils import vprint
 
-from .. import version
 from ..core import evaluate_flag
 from ..tabs import FlagTab
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
 
 
 def add_command_line_arguments(topparser, parents=[]):

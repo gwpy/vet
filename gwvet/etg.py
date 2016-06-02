@@ -22,11 +22,7 @@
 from gwsumm.plot import get_column_label
 from gwsumm.utils import re_cchar
 
-from . import version
-
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-__version__ = version.version
-
 
 _DEFAULTS = {
     'frequency': 'peak_frequency',
