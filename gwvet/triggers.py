@@ -28,35 +28,28 @@ from gwpy.table.utils import get_row_value
 from gwpy.segments import DataQualityFlag
 
 from gwsumm import globalv
-from gwsumm.triggers import get_triggers
+from gwsumm.triggers import (get_triggers, get_times, time_in_segments)
 
 re_meta = re.compile('(\||:|\&)')
 
 
-def veto(table, flag, tag=''):
+def veto(table, flag, tag='', channel='unknown-channel', etg='unknown-etg'):
     """Apply a veto to a set of event table and return survivors
     """
-    alabel = veto_tag(table.channel, flag, tag)
-    vlabel = veto_tag(table.channel, flag, tag, mode='#')
-    akey = '%s,%s' % (alabel, table.etg.lower())
-    vkey = '%s,%s' % (vlabel, table.etg.lower())
+    alabel = veto_tag(channel, flag, tag)
+    vlabel = veto_tag(channel, flag, tag, mode='#')
+    akey = '%s,%s' % (alabel, etg.lower())
+    vkey = '%s,%s' % (vlabel, etg.lower())
     if alabel in globalv.TRIGGERS:
-        return get_triggers(alabel, table.etg, flag.known, query=False)
+        return get_triggers(alabel, etg, flag.known, query=False)
     else:
-        after = table.copy()
-        vetoed = table.copy()
-        segs = flag.active
-        get = get_row_value
-        for row in table:
-            if float(get(row, 'time')) in segs:
-                vetoed.append(row)
-            else:
-                after.append(row)
+        times = get_times(table, etg)
+        in_segs = time_in_segments(times, flag.active)
+        vetoed = table[in_segs]
         vetoed.segments = flag.active
+        after = table[~in_segs]
         after.segments = flag.known - flag.active
         for t, key in zip([after, vetoed], [akey, vkey]):
-            t.channel = table.channel
-            t.etg = table.etg
             globalv.TRIGGERS[key] = t
         return after
 
