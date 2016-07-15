@@ -223,8 +223,14 @@ def loudest_event_factory(column):
         """
         if after is None:
             after = before.veto(segments.active)
-        brank = get_table_column(before, column).max()
-        arank = get_table_column(after, column).max()
+        try:
+            brank = get_table_column(before, column).max()
+        except ValueError:  # no triggers to start with
+            return 0
+        try:
+            arank = get_table_column(after, column).max()
+        except ValueError:  # no triggers after veto
+            return 100
         return (brank - arank) / brank * 100
     loudest_event.__doc__ %= column
     return loudest_event
@@ -253,9 +259,7 @@ def get_reduced_table(table, column, op, threshold):
     """
     data = get_table_column(table, column)
     mask = op(data, threshold)
-    new = table.copy()
-    new.extend(t for t, m in izip(table, mask) if m)
-    return new
+    return table[mask]
 
 
 def metric_by_column_value_factory(metric, column, threshold, operator='>=',

@@ -35,7 +35,7 @@ __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
 
 def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
-                  minduration=0, vetotag=''):
+                  minduration=0, vetotag='', channel=None, etg=None):
     """Evaluate the performance of a set of a `~gwpy.segments.DataQualityFlag`
 
     Parameters
@@ -71,7 +71,7 @@ def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
 
     # apply vetoes to triggers
     if triggers is not None:
-        after = veto(triggers, flag, tag=vetotag)
+        after = veto(triggers, flag, tag=vetotag, channel=channel, etg=etg)
     else:
         after = None
 

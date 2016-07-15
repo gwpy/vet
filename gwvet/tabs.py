@@ -29,7 +29,7 @@ from gwpy.time import Time
 from gwsumm.config import NoOptionError
 from gwsumm.data import get_channel
 from gwsumm.segments import (get_segments, format_padding)
-from gwsumm.triggers import (get_triggers, get_etg_table)
+from gwsumm.triggers import (get_triggers, get_etg_table, register_etg_table)
 from gwsumm.tabs import get_tab, register_tab
 from gwsumm.html import (data_table, markup)
 from gwsumm.plot import (get_plot, get_column_label)
@@ -103,7 +103,6 @@ class FlagTab(ParentTab):
         self.metrics = metrics
         self.channel = channel and get_channel(channel) or None
         self.etg = etg
-        self.table = table
         self.intersection = intersection
         self.padding = format_padding(self.flags, padding)
         if intersection:
@@ -115,6 +114,9 @@ class FlagTab(ParentTab):
         # configure default plots
         if not len(self.plots):
             self.init_plots(plotdir=plotdir)
+        # register table for this ETG
+        if table is not None:
+            register_etg_table(self.etg, table, force=True)
 
     @classmethod
     def from_ini(cls, config, section, **kwargs):
@@ -301,13 +303,14 @@ class FlagTab(ParentTab):
         if self.channel:
             cache = kwargs.pop('trigcache', None)
             before = get_triggers(str(self.channel), self.etg, state,
-                                  cache=cache, tablename=self.table)
+                                  cache=cache)
         else:
             before = None
         # then apply all of the metrics
         self.results[state] = evaluate_flag(
             segs, triggers=before, metrics=self.metrics, injections=None,
-            minduration=self.minseglength, vetotag=str(state))[0]
+            minduration=self.minseglength, vetotag=str(state),
+            channel=str(self.channel), etg=self.etg)[0]
         vprint("    Veto evaluation results:\n")
         for metric, val in self.results[state].iteritems():
             vprint('        %s: %s\n' % (metric, val))
