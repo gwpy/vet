@@ -12,12 +12,12 @@ addons:
 matrix:
   include:
     - python: 2.6
-      env: PRE=""
     - python: 2.7
       env: PRE=""
     - python: 2.7
       env: PRE="--pre"
   allow_failures:
+    - python: 2.6
     - python: 2.7
       env: PRE="--pre"
 
@@ -26,9 +26,11 @@ before_install:
 
 install:
     # install glue first
-  - pip install M2Crypto pykerberos python-cjson http://software.ligo.org/lscsoft/source/glue-1.49.1.tar.gz
+  - pip install M2Crypto pykerberos python-cjson http://software.ligo.org/lscsoft/source/glue-1.50.0.tar.gz
     # then install gwpy
   - pip install gwpy
+    # need to install astropy 1.1 specifically for py26
+  - if [[ ${TRAVIS_PYTHON_VERSION} == '2.6' ]]; then pip install "astropy==1.1"; fi
     # then install everything else
   - pip install ${PRE} -r requirements.txt
 
