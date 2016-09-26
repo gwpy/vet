@@ -78,9 +78,9 @@ class FlagTab(ParentTab):
         other keyword arguments to set up this tab get passed to the
         `DataTab` constructor
     """
-    type = 'archived-veto-flag'
+    type = 'veto-flag'
 
-    def __init__(self, name, start, end,
+    def __init__(self, name,
                  flags=[],
                  metrics=[],
                  channel=None, etg=None, table=None,
@@ -95,7 +95,7 @@ class FlagTab(ParentTab):
             if isinstance(name, tuple):
                 name = name[0]
         super(FlagTab, self).__init__(
-            name, start, end, states=states, **kwargs)
+            name, states=states, **kwargs)
         self.flags = list(flags)
         self.segmentfile = segmentfile
         self.minseglength = minseglength
