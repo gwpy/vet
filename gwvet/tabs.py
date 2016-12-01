@@ -26,12 +26,12 @@ from glue.lal import Cache
 from gwpy.plotter.tex import label_to_latex
 from gwpy.time import Time
 
+from gwsumm import html
 from gwsumm.config import NoOptionError
 from gwsumm.data import get_channel
 from gwsumm.segments import (get_segments, format_padding)
 from gwsumm.triggers import (get_triggers, get_etg_table, register_etg_table)
 from gwsumm.tabs import get_tab, register_tab
-from gwsumm.html import (data_table, markup)
 from gwsumm.plot import (get_plot, get_column_label)
 from gwsumm.utils import vprint
 from gwsumm.state import ALLSTATE
@@ -323,14 +323,15 @@ class FlagTab(ParentTab):
         performance = [(str(m), '%.2f %s' % (r.value, r.unit),
                         m.description.split('\n')[0]) for
                        (m, r) in self.results[state].iteritems()]
-        pre = markup.page()
+        pre = html.markup.page()
         pre.div(class_='scaffold well')
         pre.strong('Flag performance summary')
-        pre.add(str(data_table(['Metric', 'Result', 'Description'], performance)))
+        pre.add(str(html.table(['Metric', 'Result', 'Description'],
+                               performance)))
         pre.div.close()
         pre.h2('Figures of Merit')
         # write configuration table
-        post = markup.page()
+        post = html.markup.page()
         def add_config_entry(title, entry):
             post.tr()
             post.th(title)
