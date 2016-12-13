@@ -193,6 +193,8 @@ class FlagTab(ParentTab):
         else:
             label = 'Union'
 
+        etgstr = self.etg.replace('_', r'\_')
+
         self.layout = [1,]
         before = get_channel(str(self.channel))
         for state in self.states:
@@ -219,7 +221,7 @@ class FlagTab(ParentTab):
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
                     title='Impact of %s (%s)' % (
-                        label_to_latex(self.name), self.etg),
+                        label_to_latex(self.name), etgstr),
                     outdir=plotdir, labels=['_', 'Vetoed'],
                     colors=['lightblue', 'red'], **glitchgramargs))
 
@@ -233,7 +235,7 @@ class FlagTab(ParentTab):
                         [before, after], self.start, self.end, state=state,
                         column=params[column], etg=self.etg, outdir=plotdir,
                         title='Impact of %s (%s)' % (
-                            label_to_latex(self.name), self.etg),
+                            label_to_latex(self.name), etgstr),
                         labels=['Before', 'After'],
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
