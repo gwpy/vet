@@ -207,7 +207,7 @@ class FlagTab(ParentTab):
                 params = etg.get_etg_parameters(self.etg)
                 glitchgramargs = {
                     'etg': self.etg,
-                    'x': 'time',
+                    'x': params['time'],
                     'y': params['frequency'],
                     'logy': params.get('frequency-log', True),
                     'ylabel': get_column_label(params['frequency']),
