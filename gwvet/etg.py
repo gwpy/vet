@@ -25,6 +25,7 @@ from gwsumm.utils import re_cchar
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
 _DEFAULTS = {
+    'time': 'time',
     'frequency': 'peak_frequency',
     'snr': 'snr',
     'det': 'snr',
@@ -64,6 +65,7 @@ ETG_EQUIVALENTS = [
      'daily_ahope_bns', 'daily_ahope_nsbh', 'daily_ahope_bbh'],
     ['kleinewelle', 'kw'],
     ['dmtomega', 'dmt_omega'],
+    ['pycbc', 'pycbc_live'],
 ]
 
 
@@ -89,6 +91,13 @@ register_etg_parameters('cwb', **{
     'det-limits': [3, 50],
 })
 register_etg_parameters('ahope', **{
+    'frequency': 'template_duration',
+    'det': 'new_snr',
+    'det-limits': [6, 10],
+    'det-log': False,
+})
+register_etg_parameters('pycbc', **{
+    'time': 'end_time',
     'frequency': 'template_duration',
     'det': 'new_snr',
     'det-limits': [6, 10],
