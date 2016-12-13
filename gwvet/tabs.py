@@ -303,7 +303,7 @@ class FlagTab(ParentTab):
         if self.channel:
             cache = kwargs.pop('trigcache', None)
             before = get_triggers(str(self.channel), self.etg, state,
-                                  cache=cache)
+                                  config=config, cache=cache)
         else:
             before = None
         # then apply all of the metrics
