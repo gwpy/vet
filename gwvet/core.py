@@ -70,6 +70,7 @@ def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
         flag.active = flag.known - post
 
     # apply vetoes to triggers
+    triggers.etg = etg
     if triggers is not None:
         after = veto(triggers, flag, tag=vetotag, channel=channel, etg=etg)
     else:
