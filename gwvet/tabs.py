@@ -287,16 +287,16 @@ class FlagTab(ParentTab):
             self.layout.append(1)
 
     def process_state(self, state, *args, **kwargs):
+        config = kwargs.get('config', None)
         # first get all of the segments
         if self.segmentfile:
-            get_segments(self.flags, state, config=kwargs.get('config', None),
+            get_segments(self.flags, state, config=config,
                          cache=self.segmentfile, return_=False)
             segs = get_segments(self.metaflag, state, padding=self.padding,
-                                config=kwargs.get('config', None), query=False)
+                                config=config, query=False)
             kwargs['segmentcache'] = Cache()
         else:
-            segs = get_segments(self.metaflag, state,
-                                kwargs.get('config', None),
+            segs = get_segments(self.metaflag, state, config=config,
                                 segdb_error=kwargs.get('segdb_error', 'raise'),
                                 padding=self.padding)
         # then get all of the triggers
