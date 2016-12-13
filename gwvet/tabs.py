@@ -193,7 +193,7 @@ class FlagTab(ParentTab):
         else:
             label = 'Union'
 
-        etgstr = self.etg.replace('_', r'\_')
+        etgstr = self.etg.replace('_', r'\\_')
 
         self.layout = [1,]
         before = get_channel(str(self.channel))
