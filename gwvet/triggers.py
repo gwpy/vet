@@ -43,7 +43,7 @@ def veto(table, flag, tag='', channel='unknown-channel', etg='unknown-etg'):
     if alabel in globalv.TRIGGERS:
         return get_triggers(alabel, etg, flag.known, query=False)
     else:
-        times = get_times(table, etg)
+        times = get_times(table, etg=etg)
         in_segs = time_in_segments(times, flag.active)
         vetoed = table[in_segs]
         vetoed.segments = flag.active
