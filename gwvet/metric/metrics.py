@@ -207,7 +207,7 @@ def safety(segments, injections, threshold=SAFETY_THRESHOLD):
 register_metric(Metric(safety, 'Safety', unit=None))
 
 
-def loudest_event_factory(column):
+def loudest_event_metric_factory(column):
     @_use_dqflag
     def loudest_event(segments, before, after=None):
         """Percentage reduction in the amplitude of the loudest event by %s
@@ -239,12 +239,8 @@ def loudest_event_factory(column):
             return 100
         return (brank - arank) / brank * 100
     loudest_event.__doc__ %= column
-    return loudest_event
-
-for column in ['snr', 'new_snr', 'rho']:
-    register_metric(
-        Metric(loudest_event_factory(column),
-               'Loudest event by %s' % column, unit=Unit('%')))
+    return register_metric(Metric(
+        loudest_event, 'Loudest event by %s' % column, unit=Unit('%')))
 
 
 # -- generic factory method ---------------------
