@@ -30,7 +30,7 @@ from gwsumm import html
 from gwsumm.config import NoOptionError
 from gwsumm.data import get_channel
 from gwsumm.segments import (get_segments, format_padding)
-from gwsumm.triggers import (get_triggers, get_etg_table, register_etg_table)
+from gwsumm.triggers import get_triggers
 from gwsumm.tabs import get_tab, register_tab
 from gwsumm.plot import (get_plot, get_column_label)
 from gwsumm.utils import vprint
@@ -71,6 +71,8 @@ class FlagTab(ParentTab):
         event-trigger performance
     etg : `str`, optional
         the name of the event-trigger-generator for the above `channel`
+    format : `str`, optional
+        the name of the input event file format
     intersection : `bool`, optional, default: `False`
         use the intersection of segments from all flags, otherwise use the
         union
@@ -83,7 +85,7 @@ class FlagTab(ParentTab):
     def __init__(self, name,
                  flags=[],
                  metrics=[],
-                 channel=None, etg=None, table=None,
+                 channel=None, etg=None, format=None,
                  intersection=False,
                  labels=None,
                  segmentfile=None,
@@ -103,6 +105,7 @@ class FlagTab(ParentTab):
         self.metrics = metrics
         self.channel = channel and get_channel(channel) or None
         self.etg = etg
+        self.etgformat = format
         self.intersection = intersection
         self.padding = format_padding(self.flags, padding)
         if intersection:
@@ -114,9 +117,6 @@ class FlagTab(ParentTab):
         # configure default plots
         if not len(self.plots):
             self.init_plots(plotdir=plotdir)
-        # register table for this ETG
-        if table is not None:
-            register_etg_table(self.etg, table, force=True)
 
     @classmethod
     def from_ini(cls, config, section, **kwargs):
@@ -158,7 +158,7 @@ class FlagTab(ParentTab):
         else:
             kwargs.setdefault('etg', config.get(section, 'event-generator'))
             try:
-                kwargs.setdefault('table', config.get(section, 'event-table'))
+                kwargs.setdefault('format', config.get(section, 'event-format'))
             except NoOptionError:
                 pass
         # get flag combine
@@ -305,7 +305,8 @@ class FlagTab(ParentTab):
         if self.channel:
             cache = kwargs.pop('trigcache', None)
             before = get_triggers(str(self.channel), self.etg, state,
-                                  config=config, cache=cache)
+                                  config=config, cache=cache,
+                                  format=self.etgformat)
         else:
             before = None
         # then apply all of the metrics
