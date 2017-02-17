@@ -30,10 +30,12 @@ _METRICS = {}
 
 REGEX_METRIC_FACTORY = re.compile(
     '(?P<metric>(.*))\|(\s+)?'  # match metric name
-    '(?P<column>\w+)(\s+)?'  # match column name
+    '(?P<column>[\w\s]+)(\s+)?'  # match column name
     '(?P<operator>[<>=!]+)(\s+)?'  # match operator
     '(?P<value>(.*))\Z'  # match value (arbitrary text)
 )
+REGEX_LOUDEST_EVENT_FACTORY = re.compile(
+    'loudest event by (?P<column>[\w\s]+)', re.I)
 
 
 def register_metric(metric, name=None, force=False):
@@ -64,8 +66,7 @@ def register_metric(metric, name=None, force=False):
     if force or name.lower() not in _METRICS:
         _METRICS[name.lower()] = metric
     else:
-        raise ValueError("Plot %r has already been registered to the %s "
-                         "class" % (name, metric.__name__))
+        raise ValueError("A metric has already been registered as %r" % name)
     return metric
 
 
@@ -82,15 +83,25 @@ def get_metric(name):
     try:
         return _METRICS[name.lower()]
     except KeyError:
+        # match metric with column restrictions
         try:
             match = REGEX_METRIC_FACTORY.match(name).groupdict()
-        except AttributeError:
-            raise ValueError("No Metric registered with name %r" % name)
+        except AttributeError as e:
+            pass
         else:
             from .metrics import metric_by_column_value_factory
             return metric_by_column_value_factory(
                 match['metric'].rstrip(), match['column'],
                 float(match['value']), match['operator'], name=name)
+        # match loudest event metric
+        try:
+            match = REGEX_LOUDEST_EVENT_FACTORY.match(name).groupdict()
+        except AttributeError as e:
+            pass
+        else:
+            from .metrics import loudest_event_metric_factory
+            return loudest_event_metric_factory(match['column'])
+        raise ValueError("No Metric registered with name %r" % name)
 
 
 def get_all_metrics():
