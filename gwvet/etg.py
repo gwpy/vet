@@ -19,6 +19,8 @@
 """ETG configurations
 """
 
+from six import string_types
+
 from gwsumm.plot import get_column_label
 from gwsumm.utils import re_cchar
 
@@ -49,12 +51,16 @@ def register_etg_parameters(name, force=False, **parameters):
     return ETG_PARAMETERS[name]
 
 
-def get_etg_parameters(name):
+def get_etg_parameters(name, **kwargs):
     canon = get_canonical_etg_name(name)
     try:
-        return ETG_PARAMETERS[canon]
+        params = ETG_PARAMETERS[canon]
     except KeyError as e:
-        return register_etg_parameters(canon)
+        params = register_etg_parameters(canon)
+    for key, val in params.items():
+        if isinstance(val, string_types):
+            params[key] = val.format(**kwargs)
+    return params
 
 
 # map of equivalent ETG names

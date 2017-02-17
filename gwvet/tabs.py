@@ -204,7 +204,7 @@ class FlagTab(ParentTab):
                 vetoed = get_channel(veto_tag(before, self.metaflag,
                                               mode='vetoed'))
                 # -- configure trigger plots
-                params = etg.get_etg_parameters(self.etg)
+                params = etg.get_etg_parameters(self.etg, IFO=before.ifo)
                 glitchgramargs = {
                     'etg': self.etg,
                     'x': params['time'],
