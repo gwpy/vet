@@ -91,10 +91,16 @@ register_etg_parameters('omicron')
 register_etg_parameters('kleinewelle', frequency='central_freq')
 register_etg_parameters('excesspower', frequency='central_freq')
 register_etg_parameters('cwb', **{
-    'frequency': 'central_freq',
-    'det': 'amplitude',
-    'det-label': get_column_label('rho'),
-    'det-limits': [3, 50],
+    'time': 'time for {IFO} detector',
+    'frequency': 'central frequency',
+    'frequency-label': 'Frequency [Hz]',
+    'snr': 'sSNR for {IFO} detector',
+    'snr-label': 'Signal-to-noise ratio (SNR)',
+    'snr-limits': [45,200],
+    'det': 'effective correlated amplitude rho',
+    'det-label': r'$\rho$',
+    'det-limits': [5, 10],
+    'det-log': False,
 })
 register_etg_parameters('ahope', **{
     'frequency': 'template_duration',
