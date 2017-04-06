@@ -19,10 +19,7 @@
 """Utilities for segment access
 """
 
-try:
-    from cjson import decode as decode_json
-except ImportError:
-    from json import loads as decode_json
+from json import loads as decode_json
 
 from astropy.io.registry import _get_valid_format
 
@@ -128,6 +125,7 @@ def get_known_flags(start, end, url='https://segments.ligo.org', ifo=None,
     end = int(to_gps(end))
     uri = '%s/report/known?s=%d&e=%d' % (url, start, end)
     out = decode_json(urifunctions.getDataUrllib2(uri))
+
     def select_flag(f):
         if ifo is not None and f['ifo'] != ifo:
             return False
