@@ -1,42 +1,39 @@
 language: python
 
-addons:
-  apt:
-    packages:
-      - gfortran  # scipy
-      - libblas-dev  # scipy
-      - liblapack-dev  # scipy
-      - python-m2crypto  # glue
-      - swig  # M2Crypto
+python:
+  - '2.7'
+  - '3.4'
+  - '3.5'
+  - '3.6'
 
 matrix:
-  include:
-    - python: 2.6
-    - python: 2.7
-      env: PRE=""
-    - python: 2.7
-      env: PRE="--pre"
   allow_failures:
-    - python: 2.6
-    - python: 2.7
-      env: PRE="--pre"
+    - python: '3.4'
+    - python: '3.5'
+    - python: '3.6'
+  fast_finish: true
 
 before_install:
-  - pip install -q --upgrade pip
+  - python -m pip install -q --upgrade pip
+  - python -m pip install lalsuite
+  - python -m pip install -r requirements.txt
 
 install:
-    # install glue first
-  - pip install M2Crypto pykerberos python-cjson http://software.ligo.org/lscsoft/source/glue-1.50.0.tar.gz
-    # then install gwpy
-  - pip install gwpy
-    # need to install astropy 1.1 specifically for py26
-  - if [[ ${TRAVIS_PYTHON_VERSION} == '2.6' ]]; then pip install "astropy==1.1"; fi
-    # then install everything else
-  - pip install ${PRE} -r requirements.txt
+  - python -m pip install .
 
 script:
-  - pip install .
+  # run unit tests
+  - python setup.py test
+  # run --help on all scripts (just to check for missing imports, etc)
+  - |
+    set -e
+    for EXE in bin/*; do
+        echo "$ `basename $EXE` --help"
+        `basename $EXE` --help 1> /dev/null
+    done
+    set +e
 
 cache:
-  apt: true
   pip: true
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
