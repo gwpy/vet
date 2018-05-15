@@ -19,16 +19,15 @@
 """Utilities for trigger reading
 """
 
-from __future__ import print_function
 import re
 
-__author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
-
-from gwpy.table.utils import get_row_value
+from gwpy.table.filters import in_segmentlist
 from gwpy.segments import DataQualityFlag
 
 from gwsumm import globalv
-from gwsumm.triggers import (get_triggers, get_times, time_in_segments)
+from gwsumm.triggers import (get_triggers, get_times)
+
+__author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
 re_meta = re.compile('(\||:|\&)')
 
@@ -44,7 +43,7 @@ def veto(table, flag, tag='', channel='unknown-channel', etg='unknown-etg'):
         return get_triggers(alabel, etg, flag.known, query=False)
     else:
         times = get_times(table, etg=etg)
-        in_segs = time_in_segments(times, flag.active)
+        in_segs = in_segmentlist(times, flag.active)
         vetoed = table[in_segs]
         vetoed.segments = flag.active
         after = table[~in_segs]
@@ -59,11 +58,9 @@ def vetoed(table, flag):
     """
     if isinstance(flag, DataQualityFlag):
         flag = flag.active
-    after = table.copy()
-    for row in table:
-        if float(get_row_value(row, 'time')) in flag:
-            after.append(row)
-    return after
+    times = get_times(table, table.meta.get('etg', None))
+    vetoed = in_segmentlist(times, flag)
+    return table[vetoed]
 
 
 def veto_tag(channel, flag, tag=None, mode='after'):

@@ -31,7 +31,6 @@ from scipy.stats import poisson
 from astropy.units import Unit
 
 from gwpy.segments import DataQualityFlag
-from gwpy.table.utils import get_table_column
 
 from gwsumm.triggers import get_times
 
@@ -230,11 +229,11 @@ def loudest_event_metric_factory(column):
         if after is None:
             after = before.veto(segments.active)
         try:
-            brank = get_table_column(before, column).max()
+            brank = before[column].max()
         except ValueError:  # no triggers to start with
             return 0
         try:
-            arank = get_table_column(after, column).max()
+            arank = after[column].max()
         except ValueError:  # no triggers after veto
             return 100
         return (brank - arank) / brank * 100
@@ -256,14 +255,6 @@ OPERATORS = {
 }
 
 
-def get_reduced_table(table, column, op, threshold):
-    """Return a masked version of a column with an operator and threshold
-    """
-    data = get_table_column(table, column)
-    mask = op(data, threshold)
-    return table[mask]
-
-
 def metric_by_column_value_factory(metric, column, threshold, operator='>=',
                                    name=None):
     metric = get_metric(metric)
@@ -275,11 +266,11 @@ def metric_by_column_value_factory(metric, column, threshold, operator='>=',
 
     @_use_dqflag
     def metric_by_column_value(segments, before, after=None):
-        b = get_reduced_table(before, column.lower(), op, threshold)
+        b = before.filter((column.lower(), op, threshold))
         if after is None:
             a = None
         else:
-            a = get_reduced_table(after, column.lower(), op, threshold)
+            a = after.filter((column.lower(), op, threshold))
         return metric(segments, b, after=a)
 
     tag = ' (%s %s %s)' % (column, operator, threshold)

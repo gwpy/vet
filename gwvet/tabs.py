@@ -195,7 +195,7 @@ class FlagTab(ParentTab):
 
         etgstr = self.etg.replace('_', r'\\_')
 
-        self.layout = [1,]
+        self.set_layout([1,])
         before = get_channel(str(self.channel))
         for state in self.states:
             if self.channel:
