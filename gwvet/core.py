@@ -25,7 +25,6 @@ except ImportError:
     from ordereddict import OrderedDict
 
 from gwpy.segments import DataQualityFlag
-from gwpy.table.utils import get_row_value
 
 from .triggers import veto
 from .metric import Metric
