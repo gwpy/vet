@@ -207,6 +207,7 @@ register_metric(Metric(safety, 'Safety', unit=None))
 
 
 def loudest_event_metric_factory(column):
+    column = column.lower()
     @_use_dqflag
     def loudest_event(segments, before, after=None):
         """Percentage reduction in the amplitude of the loudest event by %s
