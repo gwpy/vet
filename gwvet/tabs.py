@@ -215,8 +215,9 @@ class FlagTab(ParentTab):
                     'edgecolor': 'none',
                     'legend-scatterpoints': 1,
                     'legend-borderaxespad': 0,
-                    'legend-bbox_to_anchor': (1.01, 1),
+                    'legend-bbox_to_anchor': (1, 1),
                     'legend-loc': 'upper left',
+                    'legend-frameon': False,
                 }
                 # plot before/after glitchgram
                 self.plots.append(get_plot('triggers')(
@@ -247,8 +248,10 @@ class FlagTab(ParentTab):
                         weights=1/float(abs(self.span)), bins=100,
                         ybound=1/float(abs(self.span)) * 0.5, **{
                             'legend-borderaxespad': 0,
-                            'legend-bbox_to_anchor': (1.01, 1),
-                            'legend-loc': 'upper left'}
+                            'legend-bbox_to_anchor': (1., 1.),
+                            'legend-loc': 'upper left',
+                            'legend-frameon': False,
+                        }
                     ))
 
                 # plot triggers before and after
