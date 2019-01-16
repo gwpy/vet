@@ -23,7 +23,6 @@ import os
 
 from glue.lal import Cache
 
-from gwpy.plotter.tex import label_to_latex
 from gwpy.time import Time
 
 from gwsumm import html
@@ -35,6 +34,7 @@ from gwsumm.tabs import get_tab, register_tab
 from gwsumm.plot import (get_plot, get_column_label)
 from gwsumm.utils import vprint
 from gwsumm.state import ALLSTATE
+from gwsumm.plot.utils import usetex_tex
 
 from . import etg
 from .core import evaluate_flag
@@ -222,7 +222,7 @@ class FlagTab(ParentTab):
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
                     title='Impact of %s (%s)' % (
-                        label_to_latex(self.name), etgstr),
+                        usetex_tex(self.name), etgstr),
                     outdir=plotdir, labels=['_', 'Vetoed'],
                     colors=['lightblue', 'red'], **glitchgramargs))
 
@@ -236,7 +236,7 @@ class FlagTab(ParentTab):
                         [before, after], self.start, self.end, state=state,
                         column=params[column], etg=self.etg, outdir=plotdir,
                         title='Impact of %s (%s)' % (
-                            label_to_latex(self.name), etgstr),
+                            usetex_tex(self.name), etgstr),
                         labels=['Before', 'After'],
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
@@ -267,7 +267,7 @@ class FlagTab(ParentTab):
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
                         title='After %s (%s)' % (
-                            label_to_latex(self.name), self.etg),
+                            usetex_tex(self.name), self.etg),
                         outdir=plotdir, **glitchgramargs))
                     self.layout.append(2)
 
