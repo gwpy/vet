@@ -87,9 +87,9 @@ def get_canonical_etg_name(name):
 # -----------------------------------------------------------------------------
 # register well known ETGs
 
-register_etg_parameters('omicron')
-register_etg_parameters('kleinewelle', frequency='central_freq')
-register_etg_parameters('excesspower', frequency='central_freq')
+register_etg_parameters('omicron', time='peak')
+register_etg_parameters('kleinewelle', time='peak', frequency='central_freq')
+register_etg_parameters('excesspower', time='peak', frequency='central_freq')
 register_etg_parameters('cwb', **{
     'time': 'time for {IFO} detector',
     'frequency': 'central frequency',
