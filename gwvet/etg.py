@@ -32,7 +32,7 @@ _DEFAULTS = {
     'snr': 'snr',
     'det': 'snr',
     'det-limits': [3, 100],
-    'det-log': True,
+    'det-scale': 'log',
 }
 
 ETG_PARAMETERS = {}
@@ -100,18 +100,18 @@ register_etg_parameters('cwb', **{
     'det': 'effective correlated amplitude rho',
     'det-label': r'$\rho$',
     'det-limits': [5, 10],
-    'det-log': False,
+    'det-scale': 'linear',
 })
 register_etg_parameters('ahope', **{
     'frequency': 'template_duration',
     'det': 'new_snr',
     'det-limits': [6, 10],
-    'det-log': False,
+    'det-scale': 'linear',
 })
 register_etg_parameters('pycbc', **{
     'time': 'end_time',
     'frequency': 'template_duration',
     'det': 'new_snr',
     'det-limits': [6, 10],
-    'det-log': False,
+    'det-scale': 'linear',
 })
