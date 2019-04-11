@@ -5,6 +5,6 @@ astropy>=1.0
 decorator
 lscsoft-glue
 dqsegdb
-gwpy>=0.7
-git+https://github.com/ligovirgo/trigfind.git
+gwpy>=0.14.2
+gwtrigfind
 git+https://github.com/gwpy/gwsumm.git

@@ -62,14 +62,17 @@ setup_requires = [
     'setuptools',
     'pytest-runner',
 ]
-install_requires = []
-requires = [
-    'numpy',
-    'matplotlib',
-    'scipy',
-    'glue',
+install_requires = [
+    'astropy>=1.0',
+    'decorator',
     'dqsegdb',
-    'gwpy',
+    'gwpy>=0.14.2',
+    'gwsumm',
+    'gwtrigfind',
+    'lscsoft-glue',
+    'matplotlib>=1.5',
+    'numpy>=1.7',
+    'scipy',
 ]
 tests_require = [
     'pytest'
@@ -97,12 +100,7 @@ setup(name=DISTNAME,
       scripts=scripts,
       setup_requires=setup_requires,
       install_requires=install_requires,
-      requires=requires,
       extras_require=extras_require,
-      dependency_links=[
-          'http://software.ligo.org/lscsoft/source/glue-1.49.1.tar.gz',
-          'http://software.ligo.org/lscsoft/source/dqsegdb-1.2.2.tar.gz',
-      ],
       use_2to3=True,
       classifiers=[
           'Programming Language :: Python',
