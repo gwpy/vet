@@ -20,13 +20,16 @@
 """
 
 import os
+try:
+    from configparser import NoOptionError
+except ImportError:  # python < 3
+    from ConfigParser import NoOptionError
 
 from glue.lal import Cache
 
 from gwpy.time import Time
 
 from gwsumm import html
-from gwsumm.config import NoOptionError
 from gwsumm.data import get_channel
 from gwsumm.segments import (get_segments, format_padding)
 from gwsumm.triggers import get_triggers
