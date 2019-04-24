@@ -25,11 +25,14 @@ try:
 except ImportError:  # python < 3
     from ConfigParser import NoOptionError
 
+from MarkupPy import markup
+
 from glue.lal import Cache
 
 from gwpy.time import Time
 
-from gwsumm import html
+from gwdetchar.io import html as gwhtml
+
 from gwsumm.data import get_channel
 from gwsumm.segments import (get_segments, format_padding)
 from gwsumm.triggers import get_triggers
@@ -333,15 +336,15 @@ class FlagTab(ParentTab):
         performance = [(str(m), '%.2f %s' % (r.value, r.unit),
                         m.description.split('\n')[0]) for
                        (m, r) in self.results[state].iteritems()]
-        pre = html.markup.page()
+        pre = markup.page()
         pre.div(class_='scaffold well')
         pre.strong('Flag performance summary')
-        pre.add(str(html.table(['Metric', 'Result', 'Description'],
-                               performance)))
+        pre.add(str(gwhtml.table(['Metric', 'Result', 'Description'],
+                                 performance)))
         pre.div.close()
         pre.h2('Figures of Merit')
         # write configuration table
-        post = html.markup.page()
+        post = markup.page()
         def add_config_entry(title, entry):
             post.tr()
             post.th(title)
