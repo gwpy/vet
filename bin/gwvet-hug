@@ -18,14 +18,20 @@
 # along with GWpy VET.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import datetime
 import glob
+import os
+try:
+    from configparser import ConfigParser
+except ImportError:  # python < 3
+    from ConfigParser import RawConfigParser as ConfigParser
+
 import numpy
+
 from gwpy.segments import DataQualityFlag
 from gwpy.time import tconvert
-import datetime
-import os
 from gwpy.segments import SegmentList, Segment, SegmentListDict
-import ConfigParser
+
 from gwvet import __version__
 
 __author__ = 'Erika Cowan <erika.cowan@ligo.org>'
@@ -258,7 +264,7 @@ print("Created DQ Flag: " + flag_name + " in .xml form as: " + name)
 
 # creating VET .ini file
 
-config = ConfigParser.RawConfigParser()
+config = ConfigParser()
 
 config.add_section('plugins')
 config.set('plugins', 'gwvet.tabs', ' ')
