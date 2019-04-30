@@ -3,7 +3,7 @@ decorator
 dqsegdb
 gwdetchar
 gwpy>=0.15.0
-gwsumm
+gwsumm>=0.1.4
 gwtrigfind
 lscsoft-glue
 MarkupPy

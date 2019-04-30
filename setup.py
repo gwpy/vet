@@ -68,7 +68,7 @@ install_requires = [
     'dqsegdb',
     'gwdetchar>=0.5.0',
     'gwpy>=0.15.0',
-    'gwsumm',
+    'gwsumm>=0.1.4',
     'gwtrigfind',
     'lscsoft-glue',
     'MarkupPy',
