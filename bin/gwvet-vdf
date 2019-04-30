@@ -8,18 +8,25 @@ from __future__ import print_function
 import os
 import sys
 import re
-
 from math import (ceil, floor)
-from urlparse import urlparse
-from urllib2 import urlopen
 from argparse import ArgumentParser
 from getpass import getuser
 from subprocess import Popen
+try:
+    from urllib.parse import urlparse
+    from urllib.request import urlopen
+except ImportError:  # python < 3
+    from urllib2 import urlopen
+    from urlparse import urlparse
+try:
+    from configparser import NoSectionError
+except ImportError:  # python < 3 or no backports.configparser
+    from ConfigParser import NoSectionError
 
 from gwpy.time import to_gps
 from gwpy.segments import (Segment, DataQualityFlag, DataQualityDict)
 
-from gwsumm.config import (GWSummConfigParser as ConfigParser, NoSectionError)
+from gwsumm.config import GWSummConfigParser as ConfigParser
 from gwsumm.state import SummaryState
 from gwsumm.utils import (re_cchar, mkdir, get_default_ifo)
 
@@ -37,7 +44,7 @@ DEFAULT_METRICS = ['Deadtime', 'Efficiency', 'Efficiency/Deadtime',
 
 def add_config_section(config, section, **params):
     config.add_section(section)
-    for key, val in params.iteritems():
+    for key, val in params.items():
         config.set(section, key, val)
 
 
@@ -60,7 +67,7 @@ def configure_veto_tab(section, parent, state, flags, segmentfile, metrics,
         params.setdefault('before', '%(event-channel)s')
         params.setdefault('after', '%(event-channel)s#%(union)s')
         params.setdefault('vetoed', '%(event-channel)s@%(union)s')
-    for key, val in params.iteritems():
+    for key, val in params.items():
         config.set(tab, key, val)
     return tab
 
@@ -223,7 +230,7 @@ ALLSEGMENTS += vdf
 
 # organise flags into categories
 flags = dict((c, DataQualityDict()) for c in categories)
-for name, flag in vdf.iteritems():
+for name, flag in vdf.items():
     try:
         flags[flag.category][name] = flag
     except KeyError:

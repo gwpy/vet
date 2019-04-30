@@ -20,14 +20,19 @@
 """
 
 import os
+try:
+    from configparser import NoOptionError
+except ImportError:  # python < 3
+    from ConfigParser import NoOptionError
+
+from MarkupPy import markup
 
 from glue.lal import Cache
 
-from gwpy.plotter.tex import label_to_latex
 from gwpy.time import Time
 
-from gwsumm import html
-from gwsumm.config import NoOptionError
+from gwdetchar.io import html as gwhtml
+
 from gwsumm.data import get_channel
 from gwsumm.segments import (get_segments, format_padding)
 from gwsumm.triggers import get_triggers
@@ -35,6 +40,7 @@ from gwsumm.tabs import get_tab, register_tab
 from gwsumm.plot import (get_plot, get_column_label)
 from gwsumm.utils import vprint
 from gwsumm.state import ALLSTATE
+from gwsumm.plot.utils import usetex_tex
 
 from . import etg
 from .core import evaluate_flag
@@ -209,20 +215,21 @@ class FlagTab(ParentTab):
                     'etg': self.etg,
                     'x': params['time'],
                     'y': params['frequency'],
-                    'logy': params.get('frequency-log', True),
+                    'yscale': params.get('frequency-scale', 'log'),
                     'ylabel': params.get('frequency-label',
                                          get_column_label(params['frequency'])),
                     'edgecolor': 'none',
                     'legend-scatterpoints': 1,
                     'legend-borderaxespad': 0,
-                    'legend-bbox_to_anchor': (1.01, 1),
+                    'legend-bbox_to_anchor': (1, 1),
                     'legend-loc': 'upper left',
+                    'legend-frameon': False,
                 }
                 # plot before/after glitchgram
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
                     title='Impact of %s (%s)' % (
-                        label_to_latex(self.name), etgstr),
+                        usetex_tex(self.name), etgstr),
                     outdir=plotdir, labels=['_', 'Vetoed'],
                     colors=['lightblue', 'red'], **glitchgramargs))
 
@@ -236,19 +243,21 @@ class FlagTab(ParentTab):
                         [before, after], self.start, self.end, state=state,
                         column=params[column], etg=self.etg, outdir=plotdir,
                         title='Impact of %s (%s)' % (
-                            label_to_latex(self.name), etgstr),
+                            usetex_tex(self.name), etgstr),
                         labels=['Before', 'After'],
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
                         color=['red', (0.2, 0.8, 0.2)],
-                        logx=params.get('%s-log' % column, True),
-                        logy=True,
+                        xscale=params.get('%s-scale' % column, 'log'),
+                        yscale='log',
                         histtype='stepfilled', alpha=0.6,
                         weights=1/float(abs(self.span)), bins=100,
                         ybound=1/float(abs(self.span)) * 0.5, **{
                             'legend-borderaxespad': 0,
-                            'legend-bbox_to_anchor': (1.01, 1),
-                            'legend-loc': 'upper left'}
+                            'legend-bbox_to_anchor': (1., 1.),
+                            'legend-loc': 'upper left',
+                            'legend-frameon': False,
+                        }
                     ))
 
                 # plot triggers before and after
@@ -267,7 +276,7 @@ class FlagTab(ParentTab):
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
                         title='After %s (%s)' % (
-                            label_to_latex(self.name), self.etg),
+                            usetex_tex(self.name), self.etg),
                         outdir=plotdir, **glitchgramargs))
                     self.layout.append(2)
 
@@ -327,15 +336,15 @@ class FlagTab(ParentTab):
         performance = [(str(m), '%.2f %s' % (r.value, r.unit),
                         m.description.split('\n')[0]) for
                        (m, r) in self.results[state].iteritems()]
-        pre = html.markup.page()
+        pre = markup.page()
         pre.div(class_='scaffold well')
         pre.strong('Flag performance summary')
-        pre.add(str(html.table(['Metric', 'Result', 'Description'],
-                               performance)))
+        pre.add(str(gwhtml.table(['Metric', 'Result', 'Description'],
+                                 performance)))
         pre.div.close()
         pre.h2('Figures of Merit')
         # write configuration table
-        post = html.markup.page()
+        post = markup.page()
         def add_config_entry(title, entry):
             post.tr()
             post.th(title)

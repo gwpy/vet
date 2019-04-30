@@ -1,17 +1,12 @@
 language: python
+dist: xenial
 
 python:
   - '2.7'
   - '3.4'
   - '3.5'
   - '3.6'
-
-matrix:
-  allow_failures:
-    - python: '3.4'
-    - python: '3.5'
-    - python: '3.6'
-  fast_finish: true
+  - '3.7'
 
 before_install:
   - python -m pip install -q --upgrade pip
@@ -22,14 +17,12 @@ install:
   - python -m pip install .
 
 script:
-  # run unit tests
-  - python setup.py test
   # run --help on all scripts (just to check for missing imports, etc)
   - |
     set -e
     for EXE in bin/*; do
-        echo "$ `basename $EXE` --help"
-        `basename $EXE` --help 1> /dev/null
+        echo "$ $(basename $EXE) --help"
+        $(basename $EXE) --help 1> /dev/null
     done
     set +e
 
