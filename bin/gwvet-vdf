@@ -8,18 +8,25 @@ from __future__ import print_function
 import os
 import sys
 import re
-
 from math import (ceil, floor)
-from urlparse import urlparse
-from urllib2 import urlopen
 from argparse import ArgumentParser
 from getpass import getuser
 from subprocess import Popen
+try:
+    from urllib.parse import urlparse
+    from urllib.request import urlopen
+except ImportError:  # python < 3
+    from urllib2 import urlopen
+    from urlparse import urlparse
+try:
+    from configparser import NoSectionError
+except ImportError:  # python < 3 or no backports.configparser
+    from ConfigParser import NoSectionError
 
 from gwpy.time import to_gps
 from gwpy.segments import (Segment, DataQualityFlag, DataQualityDict)
 
-from gwsumm.config import (GWSummConfigParser as ConfigParser, NoSectionError)
+from gwsumm.config import GWSummConfigParser as ConfigParser
 from gwsumm.state import SummaryState
 from gwsumm.utils import (re_cchar, mkdir, get_default_ifo)
 
