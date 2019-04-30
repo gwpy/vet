@@ -94,7 +94,7 @@ def get_segments(flags, segments, cache=None,
     # read lots of flags
     else:
         segs = DataQualityDict.read(cache, flags, coalesce=True, **kwargs)
-        for name, flag in segs.iteritems():
+        for name, flag in segs.items():
             flag.known &= segments
             flag.active &= segments
         return segs

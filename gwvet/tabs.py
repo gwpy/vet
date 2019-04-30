@@ -107,7 +107,7 @@ class FlagTab(ParentTab):
         self.flags = list(flags)
         self.segmentfile = segmentfile
         self.minseglength = minseglength
-        self.labels = labels or map(str, self.flags)
+        self.labels = labels or list(map(str, self.flags))
         self.metrics = metrics
         self.channel = channel and get_channel(channel) or None
         self.etg = etg
@@ -115,9 +115,9 @@ class FlagTab(ParentTab):
         self.intersection = intersection
         self.padding = format_padding(self.flags, padding)
         if intersection:
-            self.metaflag = '&'.join(map(str, self.flags))
+            self.metaflag = '&'.join(list(map(str, self.flags)))
         else:
-            self.metaflag = '|'.join(map(str, self.flags))
+            self.metaflag = '|'.join(list(map(str, self.flags)))
         # make space for the results
         self.results = {}
         # configure default plots
@@ -325,7 +325,7 @@ class FlagTab(ParentTab):
             minduration=self.minseglength, vetotag=str(state),
             channel=str(self.channel), etg=self.etg)[0]
         vprint("    Veto evaluation results:\n")
-        for metric, val in self.results[state].iteritems():
+        for metric, val in self.results[state].items():
             vprint('        %s: %s\n' % (metric, val))
         # then pass to super to make the plots
         kwargs['trigcache'] = Cache()
@@ -335,12 +335,13 @@ class FlagTab(ParentTab):
         # write results table
         performance = [(str(m), '%.2f %s' % (r.value, r.unit),
                         m.description.split('\n')[0]) for
-                       (m, r) in self.results[state].iteritems()]
+                       (m, r) in self.results[state].items()]
         pre = markup.page()
         pre.div(class_='scaffold well')
         pre.strong('Flag performance summary')
+        tableid = self.metaflag.lower().replace(':', '-')
         pre.add(str(gwhtml.table(['Metric', 'Result', 'Description'],
-                                 performance)))
+                                 performance, id=tableid)))
         pre.div.close()
         pre.h2('Figures of Merit')
         # write configuration table
@@ -353,7 +354,7 @@ class FlagTab(ParentTab):
         post.h2('Analysis configuration')
         post.div()
         post.table(class_='table table-condensed table-hover')
-        add_config_entry('Flags', '<br>'.join(map(str, self.flags)))
+        add_config_entry('Flags', '<br>'.join(list(map(str, self.flags))))
         if len(self.flags) > 1 and self.intersection:
             add_config_entry('Flag combination', 'Intersection (logical AND)')
         elif len(self.flags) > 1:
