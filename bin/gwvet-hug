@@ -57,7 +57,7 @@ def grab_time_triggers(glob_wildcard):
     start_time_utc = tconvert(args.gps_start_time)
     for filename in glob.glob(glob_wildcard):
         data = SegmentList.read(filename)
-        print 'grabbing trigger file:' + filename
+        print('grabbing trigger file:' + filename)
         start_end_seg = Segment(args.gps_start_time, args.gps_end_time)
         c = data & SegmentList([start_end_seg])
         time_segs += c
@@ -118,7 +118,7 @@ g = open("total_" + args.type_dq_flag + "_segs.txt", "w")  # file that will hold
 # choosing to read in hveto!
 if args.type_dq_flag == 'hveto':
 
-    print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path
+    print('Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path)
 
     # choosing the offline hveto option for O1, runs by Josh Smith
     if args.online_offline == 'offline':
@@ -136,10 +136,10 @@ if args.type_dq_flag == 'hveto':
             pattern_trigs_hveto = os.path.join(args.directory_path, '*VETO_SEGS_ROUND*.txt')
             pattern_segs_hveto = os.path.join(args.directory_path, 'segs.txt')
         else:
-            print 'Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.'
+            print('Did not choose O1 analysis segment 1,2,3,4,5,6,7,8,9. Please choose.')
             exit()
-        print pattern_trigs_hveto
-        print 'Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path
+        print(pattern_trigs_hveto)
+        print('Data Quality Flag chosen is hveto, stored in the path ' + args.directory_path)
 
         while start_time_utc < end_time_utc:
             day = start_time_utc.day
@@ -187,12 +187,12 @@ if args.type_dq_flag == 'hveto':
         # segments.write(g)
 
     else:
-        print 'Did not choose online or offline. Please choose.'
+        print('Did not choose online or offline. Please choose.')
 
 # choosing to read in UPVh!
 elif args.type_dq_flag == 'UPVh':
 
-    print 'Data Quality Flag chosen is ' + args.type_dq_flag + ', stored in the path ' + args.directory_path
+    print('Data Quality Flag chosen is ' + args.type_dq_flag + ', stored in the path ' + args.directory_path)
 
     pattern_trigs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'H1:*veto.txt')
     pattern_segs_UPVh = os.path.join(args.directory_path, 'DARM_LOCK_{}_{}-H', 'segments.txt')
@@ -203,8 +203,8 @@ elif args.type_dq_flag == 'UPVh':
         nextday_utc = start_of_day_utc + datetime.timedelta(days=1)
         nextday_gps = tconvert(nextday_utc)
 
-        print start_of_day_utc, nextday_utc
-        print start_of_day_gps, nextday_gps
+        print(start_of_day_utc, nextday_utc)
+        print(start_of_day_gps, nextday_gps)
 
         wildcard_UPVh_trigs = pattern_trigs_UPVh.format(start_of_day_gps, nextday_gps)
         wildcard_UPVh_segs = pattern_segs_UPVh.format(start_of_day_gps, nextday_gps)
@@ -218,7 +218,7 @@ elif args.type_dq_flag == 'UPVh':
 
 # you forgot to choose UPVh or hveto
 else:
-        print 'Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line.'
+        print('Did not give correct dq flag. Please choose from hveto, UPVh, OVL in command line.')
         exit()
 f.close()
 g.close()
@@ -230,11 +230,13 @@ flag_name = 'H1:' + args.type_dq_flag + '-RND:1'
 name = 'segments_' + args.type_dq_flag + '_RND.xml'
 
 # reading in segment files
-try: knownsegments = numpy.loadtxt('total_' + args.type_dq_flag + '_segs.txt')
-except:
-    print 'No total_' + args.type_dq_flag + '_segs.txt file in current working directory. \
-    It should have been produced from last loop. \n \
-    If this  file is empty, that may mean you have no active segments during this time period.'
+try:
+    knownsegments = numpy.loadtxt('total_' + args.type_dq_flag + '_segs.txt')
+except OSError:
+    print("No total_{}_segs.txt file in current working directory. "
+          "It should have been produced from last loop. "
+          "If this file is empty, that may mean you have no active segments "
+          "during this time period.".format(args.type_dq_flag))
 
 known_start = [knownsegments[i, 0] for i in range(len(knownsegments))]
 known_end = [knownsegments[i, 1] for i in range(len(knownsegments))]
@@ -252,7 +254,7 @@ flag = DataQualityFlag(flag_name, active=zip(start_time, end_time), known=zip(kn
 # write flag
 flag.write(name)
 
-print "Created DQ Flag: " + flag_name + " in .xml form as: " + name
+print("Created DQ Flag: " + flag_name + " in .xml form as: " + name)
 
 # creating VET .ini file
 
@@ -284,6 +286,6 @@ config.set('tab-SNR-6', 'segmentfile', name)
 with open(args.type_dq_flag + '_segs.ini', 'wb') as configfile:
     config.write(configfile)
 
-print "\n Created " + args.type_dq_flag + '_segs.ini. You have everything you need to run VET now! \n'
-print "To run VET,first go into " + args.type_dq_flag + "_segs.ini, and delete the line that only contains []. Save and exit the .ini file.\n"
-print "Now, use the command: gw_summary gps " + str(args.gps_start_time) + " " + str(args.gps_end_time) + " -f /home/detchar/etc/summary/configurations/defaults.ini -f " + args.type_dq_flag + "_segs.ini"
+print("\n Created " + args.type_dq_flag + '_segs.ini. You have everything you need to run VET now! \n')
+print("To run VET,first go into " + args.type_dq_flag + "_segs.ini, and delete the line that only contains []. Save and exit the .ini file.\n")
+print("Now, use the command: gw_summary gps " + str(args.gps_start_time) + " " + str(args.gps_end_time) + " -f /home/detchar/etc/summary/configurations/defaults.ini -f " + args.type_dq_flag + "_segs.ini")
