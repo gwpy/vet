@@ -22,14 +22,12 @@ install:
   - python -m pip install .
 
 script:
-  # run unit tests
-  - python setup.py test
   # run --help on all scripts (just to check for missing imports, etc)
   - |
     set -e
     for EXE in bin/*; do
-        echo "$ `basename $EXE` --help"
-        `basename $EXE` --help 1> /dev/null
+        echo "$ $(basename $EXE) --help"
+        $(basename $EXE) --help 1> /dev/null
     done
     set +e
 
