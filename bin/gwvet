@@ -130,7 +130,7 @@ subparser = {}
 # -----------------------------------------------------------------------------
 # Single-flag mode
 
-for action, mod in ACTIONS.iteritems():
+for action, mod in ACTIONS.items():
     subparser[action] = mod.add_command_line_arguments(subparsers, [sharedopts])
 
 # -----------------------------------------------------------------------------

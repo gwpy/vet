@@ -301,10 +301,7 @@ class Metric(object):
                                 % methodname)
         else:
             # check all methods defined in the module
-
-            methods = [func for func in mod.__dict__.itervalues()
-                if inspect.isfunction(func)]
-
+            methods = list(filter(inspect.isfunction, mod.__dict__.values()))
             if len(methods) == 1:
                 # import single method found
                 method = methods[0]

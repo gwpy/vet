@@ -44,7 +44,7 @@ DEFAULT_METRICS = ['Deadtime', 'Efficiency', 'Efficiency/Deadtime',
 
 def add_config_section(config, section, **params):
     config.add_section(section)
-    for key, val in params.iteritems():
+    for key, val in params.items():
         config.set(section, key, val)
 
 
@@ -67,7 +67,7 @@ def configure_veto_tab(section, parent, state, flags, segmentfile, metrics,
         params.setdefault('before', '%(event-channel)s')
         params.setdefault('after', '%(event-channel)s#%(union)s')
         params.setdefault('vetoed', '%(event-channel)s@%(union)s')
-    for key, val in params.iteritems():
+    for key, val in params.items():
         config.set(tab, key, val)
     return tab
 
@@ -230,7 +230,7 @@ ALLSEGMENTS += vdf
 
 # organise flags into categories
 flags = dict((c, DataQualityDict()) for c in categories)
-for name, flag in vdf.iteritems():
+for name, flag in vdf.items():
     try:
         flags[flag.category][name] = flag
     except KeyError:
