@@ -339,7 +339,7 @@ class FlagTab(ParentTab):
         pre = markup.page()
         pre.div(class_='scaffold well')
         pre.strong('Flag performance summary')
-        tableid = self.metaflag.lower().replace(':', '-')
+        tableid = self.title.lower().replace(' ', '-')
         pre.add(str(gwhtml.table(['Metric', 'Result', 'Description'],
                                  performance, id=tableid)))
         pre.div.close()
