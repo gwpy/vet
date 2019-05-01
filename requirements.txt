@@ -1,7 +1,7 @@
 astropy>=1.0
 decorator
 dqsegdb
-gwdetchar
+gwdetchar>=0.5.1
 gwpy>=0.15.0
 gwsumm>=0.1.4
 gwtrigfind
