@@ -231,7 +231,7 @@ class FlagTab(ParentTab):
                     title='Impact of %s (%s)' % (
                         usetex_tex(self.name), etgstr),
                     outdir=plotdir, labels=['_', 'Vetoed'],
-                    colors=['lightblue', 'red'], **glitchgramargs))
+                    color=['lightblue', 'red'], **glitchgramargs))
 
                 # plot histograms
                 statistics = ['snr']
@@ -275,7 +275,7 @@ class FlagTab(ParentTab):
                         outdir=plotdir, **glitchgramargs))
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
-                        title='After %s (%s)' % (
+                        suptitle='After %s (%s)' % (
                             usetex_tex(self.name), self.etg),
                         outdir=plotdir, **glitchgramargs))
                     self.layout.append(2)
