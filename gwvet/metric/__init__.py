@@ -35,9 +35,9 @@ except ImportError:
     import_module = __import__
 
 try:
-    import builtins as builtin
+    import __builtin__ as builtin
 except ImportError:
-    import builtin
+    import builtins as builtin
 
 from astropy.units import (Quantity, Unit, dimensionless_unscaled)
 
