@@ -35,7 +35,7 @@ except ImportError:
     import_module = __import__
 
 try:
-    import __builtin__ as builtin
+    import builtins as builtin
 except ImportError:
     import builtin
 
@@ -101,8 +101,8 @@ class Metric(object):
 
     @name.setter
     def name(self, nom):
-        if not isinstance(nom, (unicode, str)):
-            raise TypeError("name attribute must be unicode or str.")
+        if not isinstance(nom, str):
+            raise TypeError("name attribute must of type str")
         self._name = nom
 
     @property
@@ -142,8 +142,8 @@ class Metric(object):
 
     @description.setter
     def description(self, desc):
-        if not isinstance(desc, (unicode, str)):
-            raise TypeError("description property must be unicode or str.")
+        if not isinstance(desc, str):
+            raise TypeError("description property must be of type str")
         self._description = desc.rstrip('\n ')
 
     @property
