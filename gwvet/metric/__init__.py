@@ -35,7 +35,7 @@ except ImportError:
     import_module = __import__
 
 try:
-    import builtins as builtin
+    import __builtin__ as builtin
 except ImportError:
     import builtin
 
