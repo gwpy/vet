@@ -35,7 +35,7 @@ except ImportError:
     import_module = __import__
 
 try:
-    import __builtin__ as builtin
+    import builtins as builtin
 except ImportError:
     import builtin
 
@@ -302,7 +302,8 @@ class Metric(object):
                                 % methodname)
         else:
             # check all methods defined in the module
-            methods = list(filter(inspect.isfunction, mod.__dict__.values()))
+            methods = list(
+                filter(inspect.isfunction, list(mod.__dict__.values())))
             if len(methods) == 1:
                 # import single method found
                 method = methods[0]
