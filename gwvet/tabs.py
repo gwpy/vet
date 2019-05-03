@@ -25,6 +25,8 @@ try:
 except ImportError:  # python < 3
     from ConfigParser import NoOptionError
 
+from cycler import cycler
+
 from MarkupPy import markup
 
 from glue.lal import Cache
@@ -47,8 +49,12 @@ from .core import evaluate_flag
 from .triggers import (re_meta, veto_tag)
 from .metric import get_metric
 
+from matplotlib import rcParams
+
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
+# global defaults
+rcParams['axes.prop_cycle'] = cycler('color', ['lightblue', 'red'])
 ParentTab = get_tab('default')
 
 
@@ -230,8 +236,7 @@ class FlagTab(ParentTab):
                     [after, vetoed], self.start, self.end, state=state,
                     title='Impact of %s (%s)' % (
                         usetex_tex(self.name), etgstr),
-                    outdir=plotdir, labels=['_', 'Vetoed'],
-                    colors=['lightblue', 'red'], **glitchgramargs))
+                    outdir=plotdir, labels=['_', 'Vetoed'], **glitchgramargs))
 
                 # plot histograms
                 statistics = ['snr']
