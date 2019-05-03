@@ -102,7 +102,7 @@ class Metric(object):
     @name.setter
     def name(self, nom):
         if not isinstance(nom, str):
-            raise TypeError("name attribute must of type str")
+            raise TypeError("name attribute must be of type str")
         self._name = nom
 
     @property
