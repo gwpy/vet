@@ -234,8 +234,8 @@ class FlagTab(ParentTab):
                 # plot before/after glitchgram
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
-                    title='Impact of %s (%s)' % (
-                        usetex_tex(self.name), etgstr),
+                    title='Impact of %s' % (usetex_tex(
+                        self.title.replace('/', ': '))),
                     outdir=plotdir, labels=['_', 'Vetoed'], **glitchgramargs))
 
                 # plot histograms
@@ -247,8 +247,8 @@ class FlagTab(ParentTab):
                     self.plots.append(get_plot('trigger-histogram')(
                         [before, after], self.start, self.end, state=state,
                         column=params[column], etg=self.etg, outdir=plotdir,
-                        title='Impact of %s (%s)' % (
-                            usetex_tex(self.name), etgstr),
+                        title='Impact of %s' % (usetex_tex(
+                            self.title.replace('/', ': '))),
                         labels=['Before', 'After'],
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
@@ -280,8 +280,8 @@ class FlagTab(ParentTab):
                         outdir=plotdir, **glitchgramargs))
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
-                        title='After %s (%s)' % (
-                            usetex_tex(self.name), self.etg),
+                        title='After %s' % (usetex_tex(
+                            self.title.replace('/', ': '))),
                         outdir=plotdir, **glitchgramargs))
                     self.layout.append(2)
 
@@ -344,9 +344,8 @@ class FlagTab(ParentTab):
         pre = markup.page()
         pre.div(class_='scaffold well')
         pre.strong('Flag performance summary')
-        tableid = self.title.lower().replace(' ', '-')
         pre.add(str(gwhtml.table(['Metric', 'Result', 'Description'],
-                                 performance, id=tableid)))
+                                 performance, id=self.title)))
         pre.div.close()
         pre.h2('Figures of Merit')
         # write configuration table
