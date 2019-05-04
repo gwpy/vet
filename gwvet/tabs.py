@@ -25,8 +25,6 @@ try:
 except ImportError:  # python < 3
     from ConfigParser import NoOptionError
 
-from cycler import cycler
-
 from MarkupPy import markup
 
 from glue.lal import Cache
@@ -54,7 +52,11 @@ from matplotlib import rcParams
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
 # global defaults
-rcParams['axes.prop_cycle'] = cycler('color', ['lightblue', 'red'])
+try:
+    from cycler import cycler
+    rcParams['axes.prop_cycle'] = cycler('color', ['#add8e6', '#ee0000'])
+except ImportError:
+    rcParams['axes.color_cycle'] = ['#add8e6', '#ee0000']
 ParentTab = get_tab('default')
 
 
@@ -206,6 +208,7 @@ class FlagTab(ParentTab):
             label = 'Union'
 
         etgstr = self.etg.replace('_', r'\\_')
+        namestr = self.title.split('/')[0]
 
         before = get_channel(str(self.channel))
         for state in self.states:
@@ -218,13 +221,15 @@ class FlagTab(ParentTab):
             if len(self.flags) == 1:
                 sp = get_plot('segments')(self.flags, self.start, self.end,
                                           outdir=plotdir, labels=self.labels,
-                                          title='Veto Segments', **segargs)
+                                          title='Veto segments: %s' % (
+                                              usetex_tex(namestr)), **segargs)
             else:
                 sp = get_plot('segments')(
                     [self.metaflag] + self.flags, self.start, self.end,
                     labels=([self.intersection and 'Intersection' or 'Union'] +
                             self.labels), outdir=plotdir,
-                            title='Veto Segments', **segargs)
+                            title='Veto segments: %s' % usetex_tex(namestr),
+                            **segargs)
             self.plots.append(sp)
 
             if self.channel:
@@ -253,8 +258,8 @@ class FlagTab(ParentTab):
                 # plot before/after glitchgram
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
-                    title='Impact of %s (%s)' % (usetex_tex(
-                        self.title.split('/')[0]), self.etg),
+                    title='Impact of %s (%s)' % (
+                        usetex_tex(namestr), etgstr),
                     outdir=plotdir, labels=['After', 'Vetoed'],
                     **glitchgramargs))
 
@@ -263,16 +268,17 @@ class FlagTab(ParentTab):
                 if params['det'] != params['snr']:
                     statistics.append('det')
                 self.layout.append(len(statistics) + 1)
-                for column in statistics + ['frequency']:
+                xlims = [(5, 16384), (8, 8192)]
+                for column, xlim in zip(statistics + ['frequency'], xlims):
                     self.plots.append(get_plot('trigger-histogram')(
                         [before, after], self.start, self.end, state=state,
                         column=params[column], etg=self.etg, outdir=plotdir,
-                        title='Impact of %s (%s)' % (usetex_tex(
-                            self.title.split('/')[0]), self.etg),
-                        labels=['Before', 'After'], xlim=(8, 8192),
+                        title='Impact of %s (%s)' % (
+                            usetex_tex(namestr), etgstr),
+                        labels=['Before', 'After'], xlim=xlim,
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
-                        color=['fuchsia', 'lightblue'], alpha=1,
+                        color=['#ffa07a', '#1f77b4'], alpha=1,
                         xscale=params.get('%s-scale' % column, 'log'),
                         yscale='log', histtype='stepfilled',
                         weights=1/float(abs(self.span)), bins=100,
@@ -300,9 +306,9 @@ class FlagTab(ParentTab):
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
                         title='%s after %s (%s)' % (
-                            usetex_tex(self.channel),
-                            usetex_tex(self.title.split('/')[0]),
-                            self.etg),
+                            usetex_tex(str(self.channel)),
+                            usetex_tex(namestr),
+                            etgstr),
                         outdir=plotdir, **glitchgramargs))
                     self.layout.append(2)
 
