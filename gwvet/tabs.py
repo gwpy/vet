@@ -207,10 +207,28 @@ class FlagTab(ParentTab):
 
         etgstr = self.etg.replace('_', r'\\_')
 
-        self.set_layout([1,])
         before = get_channel(str(self.channel))
         for state in self.states:
+            # -- configure segment plot
+            segargs = {
+                'state': state,
+                'known': {'alpha': 0.1, 'facecolor': 'lightgray'},
+                'color': 'red',
+            }
+            if len(self.flags) == 1:
+                sp = get_plot('segments')(self.flags, self.start, self.end,
+                                          outdir=plotdir, labels=self.labels,
+                                          title='Veto Segments', **segargs)
+            else:
+                sp = get_plot('segments')(
+                    [self.metaflag] + self.flags, self.start, self.end,
+                    labels=([self.intersection and 'Intersection' or 'Union'] +
+                            self.labels), outdir=plotdir,
+                            title='Veto Segments', **segargs)
+            self.plots.append(sp)
+
             if self.channel:
+                self.set_layout([2,])
                 after = get_channel(veto_tag(before, self.metaflag,
                                              mode='after'))
                 vetoed = get_channel(veto_tag(before, self.metaflag,
@@ -285,23 +303,8 @@ class FlagTab(ParentTab):
                         outdir=plotdir, **glitchgramargs))
                     self.layout.append(2)
 
-            # -- configure segment plot
-            segargs = {
-                'state': state,
-                'known': {'alpha': 0.1, 'facecolor': 'lightgray'},
-                'color': 'red',
-            }
-            if len(self.flags) == 1:
-                sp = get_plot('segments')(self.flags, self.start, self.end,
-                                          outdir=plotdir, labels=self.labels,
-                                          **segargs)
             else:
-                sp = get_plot('segments')(
-                    [self.metaflag] + self.flags, self.start, self.end,
-                    labels=([self.intersection and 'Intersection' or 'Union'] +
-                            self.labels), outdir=plotdir, **segargs)
-            self.plots.append(sp)
-            self.layout.append(1)
+                self.set_layout([1,])
 
     def process_state(self, state, *args, **kwargs):
         config = kwargs.get('config', None)
