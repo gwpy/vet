@@ -240,8 +240,9 @@ class FlagTab(ParentTab):
                     'x': params['time'],
                     'y': params['frequency'],
                     'yscale': params.get('frequency-scale', 'log'),
-                    'ylabel': params.get('frequency-label',
-                                         get_column_label(params['frequency'])),
+                    'ylabel': params.get(
+                        'frequency-label',
+                        get_column_label(params['frequency'])),
                     'edgecolor': 'none',
                     'legend-scatterpoints': 1,
                     'legend-borderaxespad': 0,
@@ -252,9 +253,10 @@ class FlagTab(ParentTab):
                 # plot before/after glitchgram
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
-                    title='Impact of %s' % (usetex_tex(
-                        self.title.replace('/', ': '))),
-                    outdir=plotdir, labels=['_', 'Vetoed'], **glitchgramargs))
+                    title='Impact of %s (%s)' % (usetex_tex(
+                        self.title.split('/')[0]), self.etg),
+                    outdir=plotdir, labels=['After', 'Vetoed'],
+                    **glitchgramargs))
 
                 # plot histograms
                 statistics = ['snr']
@@ -265,17 +267,16 @@ class FlagTab(ParentTab):
                     self.plots.append(get_plot('trigger-histogram')(
                         [before, after], self.start, self.end, state=state,
                         column=params[column], etg=self.etg, outdir=plotdir,
-                        title='Impact of %s' % (usetex_tex(
-                            self.title.replace('/', ': '))),
-                        labels=['Before', 'After'],
+                        title='Impact of %s (%s)' % (usetex_tex(
+                            self.title.split('/')[0]), self.etg),
+                        labels=['Before', 'After'], xlim=(8, 8192),
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
-                        color=['red', (0.2, 0.8, 0.2)],
+                        color=['fuchsia', 'lightblue'], alpha=1,
                         xscale=params.get('%s-scale' % column, 'log'),
-                        yscale='log',
-                        histtype='stepfilled', alpha=0.6,
+                        yscale='log', histtype='stepfilled',
                         weights=1/float(abs(self.span)), bins=100,
-                        ybound=1/float(abs(self.span)) * 0.5, **{
+                        ylim=(1/float(abs(self.span)) * 0.5, 1), **{
                             'legend-borderaxespad': 0,
                             'legend-bbox_to_anchor': (1., 1.),
                             'legend-loc': 'upper left',
@@ -298,8 +299,10 @@ class FlagTab(ParentTab):
                         outdir=plotdir, **glitchgramargs))
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
-                        title='After %s' % (usetex_tex(
-                            self.title.replace('/', ': '))),
+                        title='%s after %s (%s)' % (
+                            usetex_tex(self.channel),
+                            usetex_tex(self.title.split('/')[0]),
+                            self.etg),
                         outdir=plotdir, **glitchgramargs))
                     self.layout.append(2)
 
