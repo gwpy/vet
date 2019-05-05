@@ -120,6 +120,7 @@ class FlagTab(ParentTab):
         self.channel = channel and get_channel(channel) or None
         self.etg = etg
         self.etgformat = format
+        self.filterstr = None
         self.intersection = intersection
         self.padding = format_padding(self.flags, padding)
         if intersection:
@@ -141,7 +142,8 @@ class FlagTab(ParentTab):
             'flags', [f.strip('\n ') for f in
                       config.get(section, 'flags').split(',')])
         try:
-            kwargs.setdefault('segmentfile', config.get(section, 'segmentfile'))
+            kwargs.setdefault(
+                'segmentfile', config.get(section, 'segmentfile'))
         except NoOptionError:
             pass
         # get padding
@@ -172,7 +174,8 @@ class FlagTab(ParentTab):
         else:
             kwargs.setdefault('etg', config.get(section, 'event-generator'))
             try:
-                kwargs.setdefault('format', config.get(section, 'event-format'))
+                kwargs.setdefault(
+                    'format', config.get(section, 'event-format'))
             except NoOptionError:
                 pass
         # get flag combine
@@ -191,6 +194,9 @@ class FlagTab(ParentTab):
                     kwargs['intersection'] = False
         # make tab and return
         new = super(ParentTab, cls).from_ini(config, section, **kwargs)
+        # get trigger filter
+        if config.has_option(section, 'event-filter'):
+            new.filterstr = config.get(section, 'event-filter')
         return new
 
     def init_plots(self, plotdir=os.curdir):
@@ -207,7 +213,6 @@ class FlagTab(ParentTab):
         else:
             label = 'Union'
 
-        etgstr = self.etg.replace('_', r'\\_')
         namestr = self.title.split('/')[0]
 
         before = get_channel(str(self.channel))
@@ -242,6 +247,7 @@ class FlagTab(ParentTab):
                 params = etg.get_etg_parameters(self.etg, IFO=before.ifo)
                 glitchgramargs = {
                     'etg': self.etg,
+                    'filterstr': self.filterstr,
                     'x': params['time'],
                     'y': params['frequency'],
                     'yscale': params.get('frequency-scale', 'log'),
@@ -259,22 +265,24 @@ class FlagTab(ParentTab):
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
                     title='Impact of %s (%s)' % (
-                        usetex_tex(namestr), etgstr),
+                        usetex_tex(namestr), self.etg),
                     outdir=plotdir, labels=['After', 'Vetoed'],
                     **glitchgramargs))
 
                 # plot histograms
-                statistics = ['snr']
                 if params['det'] != params['snr']:
-                    statistics.append('det')
+                    statistics = ['snr', 'det']
+                    xlims = [(5, 16384), (6, 15), (8, 8192)]
+                else:
+                    statistics = ['snr']
+                    xlims = [(5, 16384), (8, 8192)]
                 self.layout.append(len(statistics) + 1)
-                xlims = [(5, 16384), (8, 8192)]
                 for column, xlim in zip(statistics + ['frequency'], xlims):
                     self.plots.append(get_plot('trigger-histogram')(
                         [before, after], self.start, self.end, state=state,
                         column=params[column], etg=self.etg, outdir=plotdir,
                         title='Impact of %s (%s)' % (
-                            usetex_tex(namestr), etgstr),
+                            usetex_tex(namestr), self.etg),
                         labels=['Before', 'After'], xlim=xlim,
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
@@ -308,7 +316,7 @@ class FlagTab(ParentTab):
                         title='%s after %s (%s)' % (
                             usetex_tex(str(self.channel)),
                             usetex_tex(namestr),
-                            etgstr),
+                            self.etg),
                         outdir=plotdir, **glitchgramargs))
                     self.layout.append(2)
 
@@ -334,6 +342,8 @@ class FlagTab(ParentTab):
             before = get_triggers(str(self.channel), self.etg, state,
                                   config=config, cache=cache,
                                   format=self.etgformat)
+            if self.filterstr:
+                before = before.filter(self.filterstr)
         else:
             before = None
         # then apply all of the metrics
