@@ -366,6 +366,7 @@ class FlagTab(ParentTab):
                         m.description.split('\n')[0]) for
                        (m, r) in self.results[state].items()]
         pre = markup.page()
+        pre.p(self.foreword)
         pre.div(class_='scaffold well')
         pre.strong('Flag performance summary')
         pre.add(str(gwhtml.table(['Metric', 'Result', 'Description'],
