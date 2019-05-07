@@ -247,7 +247,6 @@ class FlagTab(ParentTab):
                 params = etg.get_etg_parameters(self.etg, IFO=before.ifo)
                 glitchgramargs = {
                     'etg': self.etg,
-                    'filterstr': self.filterstr,
                     'x': params['time'],
                     'y': params['frequency'],
                     'yscale': params.get('frequency-scale', 'log'),
@@ -281,6 +280,7 @@ class FlagTab(ParentTab):
                     self.plots.append(get_plot('trigger-histogram')(
                         [before, after], self.start, self.end, state=state,
                         column=params[column], etg=self.etg, outdir=plotdir,
+                        filterstr=self.filterstr,
                         title='Impact of %s (%s)' % (
                             usetex_tex(namestr), self.etg),
                         labels=['Before', 'After'], xlim=xlim,
@@ -310,14 +310,16 @@ class FlagTab(ParentTab):
                     })
                     self.plots.append(get_plot('triggers')(
                         [before], self.start, self.end, state=state,
-                        outdir=plotdir, **glitchgramargs))
+                        outdir=plotdir, filterstr=self.filterstr,
+                        **glitchgramargs))
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
                         title='%s after %s (%s)' % (
                             usetex_tex(str(self.channel)),
                             usetex_tex(namestr),
                             self.etg),
-                        outdir=plotdir, **glitchgramargs))
+                        outdir=plotdir, filterstr=self.filterstr,
+                        **glitchgramargs))
                     self.layout.append(2)
 
             else:
