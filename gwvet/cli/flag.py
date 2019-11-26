@@ -24,7 +24,7 @@ import os.path
 from gwpy.utils import gprint
 from gwpy.segments import (Segment, SegmentList, DataQualityFlag)
 
-from gwsumm.data import get_channel
+from gwsumm.channels import get_channel
 from gwsumm.segments import get_segments
 from gwsumm.state import (generate_all_state, SummaryState)
 from gwsumm.triggers import get_triggers

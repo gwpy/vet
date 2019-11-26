@@ -33,7 +33,7 @@ from gwpy.time import Time
 
 from gwdetchar.io import html as gwhtml
 
-from gwsumm.data import get_channel
+from gwsumm.channels import get_channel
 from gwsumm.segments import (get_segments, format_padding)
 from gwsumm.triggers import get_triggers
 from gwsumm.tabs import get_tab, register_tab
