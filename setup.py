@@ -103,7 +103,7 @@ setup(name=DISTNAME,
       setup_requires=setup_requires,
       install_requires=install_requires,
       extras_require=extras_require,
-      use_2to3=True,
+      use_2to3=False,
       classifiers=[
           'Programming Language :: Python',
           'Development Status :: 3 - Alpha',

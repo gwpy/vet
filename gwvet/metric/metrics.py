@@ -23,7 +23,6 @@ from __future__ import division
 
 import decorator
 import operator
-from itertools import izip
 
 import numpy
 from scipy.stats import poisson
@@ -263,7 +262,7 @@ def metric_by_column_value_factory(metric, column, threshold, operator='>=',
         op = OPERATORS[operator]
     except KeyError as e:
         e.args = ("Cannot parse operator %r, choose one of : %s"
-                  % (operator, ', '.join(OPERATORS.keys())))
+                  % (operator, ', '.join(list(OPERATORS.keys()))))
 
     @_use_dqflag
     def metric_by_column_value(segments, before, after=None):

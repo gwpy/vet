@@ -23,6 +23,7 @@ Metrics
 
 GWpy VET defines a custom `Metric` object, designed to wrap existing figure-of-merit functions into a standard format such that they can be applied conveniently to a set of segments and event triggers.
 """
+from __future__ import absolute_import
 
 import imp
 import inspect
@@ -36,7 +37,7 @@ except ImportError:
 try:
     import __builtin__ as builtin
 except ImportError:
-    import builtin
+    import builtins as builtin
 
 from astropy.units import (Quantity, Unit, dimensionless_unscaled)
 
@@ -100,8 +101,8 @@ class Metric(object):
 
     @name.setter
     def name(self, nom):
-        if not isinstance(nom, (unicode, str)):
-            raise TypeError("name attribute must be unicode or str.")
+        if not isinstance(nom, str):
+            raise TypeError("name attribute must be of type str")
         self._name = nom
 
     @property
@@ -141,8 +142,8 @@ class Metric(object):
 
     @description.setter
     def description(self, desc):
-        if not isinstance(desc, (unicode, str)):
-            raise TypeError("description property must be unicode or str.")
+        if not isinstance(desc, str):
+            raise TypeError("description property must be of type str")
         self._description = desc.rstrip('\n ')
 
     @property
@@ -301,7 +302,8 @@ class Metric(object):
                                 % methodname)
         else:
             # check all methods defined in the module
-            methods = list(filter(inspect.isfunction, mod.__dict__.values()))
+            methods = list(
+                filter(inspect.isfunction, list(mod.__dict__.values())))
             if len(methods) == 1:
                 # import single method found
                 method = methods[0]
@@ -322,7 +324,7 @@ class Metric(object):
         return cls(method, name=methodname, description=description, unit=unit)
 
 # import standard metrics
-from metrics import *
+from .metrics import *
 
 
 def read_all(pyfile):

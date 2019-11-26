@@ -112,4 +112,4 @@ def get_all_metrics():
     metricdict : `dict`
         the (unordered) `dict` of all registered metrics.
     """
-    return _METRICS.values()
+    return list(_METRICS.values())

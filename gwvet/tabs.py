@@ -47,8 +47,16 @@ from .core import evaluate_flag
 from .triggers import (re_meta, veto_tag)
 from .metric import get_metric
 
+from matplotlib import rcParams
+
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
+# global defaults
+try:
+    from cycler import cycler
+    rcParams['axes.prop_cycle'] = cycler('color', ['#add8e6', '#ee0000'])
+except ImportError:
+    rcParams['axes.color_cycle'] = ['#add8e6', '#ee0000']
 ParentTab = get_tab('default')
 
 
@@ -107,17 +115,18 @@ class FlagTab(ParentTab):
         self.flags = list(flags)
         self.segmentfile = segmentfile
         self.minseglength = minseglength
-        self.labels = labels or map(str, self.flags)
+        self.labels = labels or list(map(str, self.flags))
         self.metrics = metrics
         self.channel = channel and get_channel(channel) or None
         self.etg = etg
         self.etgformat = format
+        self.filterstr = None
         self.intersection = intersection
         self.padding = format_padding(self.flags, padding)
         if intersection:
-            self.metaflag = '&'.join(map(str, self.flags))
+            self.metaflag = '&'.join(list(map(str, self.flags)))
         else:
-            self.metaflag = '|'.join(map(str, self.flags))
+            self.metaflag = '|'.join(list(map(str, self.flags)))
         # make space for the results
         self.results = {}
         # configure default plots
@@ -133,7 +142,8 @@ class FlagTab(ParentTab):
             'flags', [f.strip('\n ') for f in
                       config.get(section, 'flags').split(',')])
         try:
-            kwargs.setdefault('segmentfile', config.get(section, 'segmentfile'))
+            kwargs.setdefault(
+                'segmentfile', config.get(section, 'segmentfile'))
         except NoOptionError:
             pass
         # get padding
@@ -164,7 +174,8 @@ class FlagTab(ParentTab):
         else:
             kwargs.setdefault('etg', config.get(section, 'event-generator'))
             try:
-                kwargs.setdefault('format', config.get(section, 'event-format'))
+                kwargs.setdefault(
+                    'format', config.get(section, 'event-format'))
             except NoOptionError:
                 pass
         # get flag combine
@@ -183,6 +194,9 @@ class FlagTab(ParentTab):
                     kwargs['intersection'] = False
         # make tab and return
         new = super(ParentTab, cls).from_ini(config, section, **kwargs)
+        # get trigger filter
+        if config.has_option(section, 'event-filter'):
+            new.filterstr = config.get(section, 'event-filter')
         return new
 
     def init_plots(self, plotdir=os.curdir):
@@ -199,12 +213,32 @@ class FlagTab(ParentTab):
         else:
             label = 'Union'
 
-        etgstr = self.etg.replace('_', r'\\_')
+        namestr = self.title.split('/')[0]
 
-        self.set_layout([1,])
         before = get_channel(str(self.channel))
         for state in self.states:
+            # -- configure segment plot
+            segargs = {
+                'state': state,
+                'known': {'alpha': 0.1, 'facecolor': 'lightgray'},
+                'color': 'red',
+            }
+            if len(self.flags) == 1:
+                sp = get_plot('segments')(self.flags, self.start, self.end,
+                                          outdir=plotdir, labels=self.labels,
+                                          title='Veto segments: %s' % (
+                                              usetex_tex(namestr)), **segargs)
+            else:
+                sp = get_plot('segments')(
+                    [self.metaflag] + self.flags, self.start, self.end,
+                    labels=([self.intersection and 'Intersection' or 'Union'] +
+                            self.labels), outdir=plotdir,
+                            title='Veto segments: %s' % usetex_tex(namestr),
+                            **segargs)
+            self.plots.append(sp)
+
             if self.channel:
+                self.set_layout([2,])
                 after = get_channel(veto_tag(before, self.metaflag,
                                              mode='after'))
                 vetoed = get_channel(veto_tag(before, self.metaflag,
@@ -216,8 +250,9 @@ class FlagTab(ParentTab):
                     'x': params['time'],
                     'y': params['frequency'],
                     'yscale': params.get('frequency-scale', 'log'),
-                    'ylabel': params.get('frequency-label',
-                                         get_column_label(params['frequency'])),
+                    'ylabel': params.get(
+                        'frequency-label',
+                        get_column_label(params['frequency'])),
                     'edgecolor': 'none',
                     'legend-scatterpoints': 1,
                     'legend-borderaxespad': 0,
@@ -229,30 +264,33 @@ class FlagTab(ParentTab):
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
                     title='Impact of %s (%s)' % (
-                        usetex_tex(self.name), etgstr),
-                    outdir=plotdir, labels=['_', 'Vetoed'],
-                    colors=['lightblue', 'red'], **glitchgramargs))
+                        usetex_tex(namestr), self.etg),
+                    outdir=plotdir, labels=['After', 'Vetoed'],
+                    **glitchgramargs))
 
                 # plot histograms
-                statistics = ['snr']
                 if params['det'] != params['snr']:
-                    statistics.append('det')
+                    statistics = ['snr', 'det']
+                    xlims = [(5, 16384), (6, 15), (8, 8192)]
+                else:
+                    statistics = ['snr']
+                    xlims = [(5, 16384), (8, 8192)]
                 self.layout.append(len(statistics) + 1)
-                for column in statistics + ['frequency']:
+                for column, xlim in zip(statistics + ['frequency'], xlims):
                     self.plots.append(get_plot('trigger-histogram')(
                         [before, after], self.start, self.end, state=state,
                         column=params[column], etg=self.etg, outdir=plotdir,
+                        filterstr=self.filterstr,
                         title='Impact of %s (%s)' % (
-                            usetex_tex(self.name), etgstr),
-                        labels=['Before', 'After'],
+                            usetex_tex(namestr), self.etg),
+                        labels=['Before', 'After'], xlim=xlim,
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
-                        color=['red', (0.2, 0.8, 0.2)],
+                        color=['#ffa07a', '#1f77b4'], alpha=1,
                         xscale=params.get('%s-scale' % column, 'log'),
-                        yscale='log',
-                        histtype='stepfilled', alpha=0.6,
+                        yscale='log', histtype='stepfilled',
                         weights=1/float(abs(self.span)), bins=100,
-                        ybound=1/float(abs(self.span)) * 0.5, **{
+                        ylim=(1/float(abs(self.span)) * 0.5, 1), **{
                             'legend-borderaxespad': 0,
                             'legend-bbox_to_anchor': (1., 1.),
                             'legend-loc': 'upper left',
@@ -272,31 +310,20 @@ class FlagTab(ParentTab):
                     })
                     self.plots.append(get_plot('triggers')(
                         [before], self.start, self.end, state=state,
-                        outdir=plotdir, **glitchgramargs))
+                        outdir=plotdir, filterstr=self.filterstr,
+                        **glitchgramargs))
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
-                        title='After %s (%s)' % (
-                            usetex_tex(self.name), self.etg),
-                        outdir=plotdir, **glitchgramargs))
+                        title='%s after %s (%s)' % (
+                            usetex_tex(str(self.channel)),
+                            usetex_tex(namestr),
+                            self.etg),
+                        outdir=plotdir, filterstr=self.filterstr,
+                        **glitchgramargs))
                     self.layout.append(2)
 
-            # -- configure segment plot
-            segargs = {
-                'state': state,
-                'known': {'alpha': 0.1, 'facecolor': 'lightgray'},
-                'color': 'red',
-            }
-            if len(self.flags) == 1:
-                sp = get_plot('segments')(self.flags, self.start, self.end,
-                                          outdir=plotdir, labels=self.labels,
-                                          **segargs)
             else:
-                sp = get_plot('segments')(
-                    [self.metaflag] + self.flags, self.start, self.end,
-                    labels=([self.intersection and 'Intersection' or 'Union'] +
-                            self.labels), outdir=plotdir, **segargs)
-            self.plots.append(sp)
-            self.layout.append(1)
+                self.set_layout([1,])
 
     def process_state(self, state, *args, **kwargs):
         config = kwargs.get('config', None)
@@ -317,6 +344,8 @@ class FlagTab(ParentTab):
             before = get_triggers(str(self.channel), self.etg, state,
                                   config=config, cache=cache,
                                   format=self.etgformat)
+            if self.filterstr:
+                before = before.filter(self.filterstr)
         else:
             before = None
         # then apply all of the metrics
@@ -325,7 +354,7 @@ class FlagTab(ParentTab):
             minduration=self.minseglength, vetotag=str(state),
             channel=str(self.channel), etg=self.etg)[0]
         vprint("    Veto evaluation results:\n")
-        for metric, val in self.results[state].iteritems():
+        for metric, val in self.results[state].items():
             vprint('        %s: %s\n' % (metric, val))
         # then pass to super to make the plots
         kwargs['trigcache'] = Cache()
@@ -335,12 +364,13 @@ class FlagTab(ParentTab):
         # write results table
         performance = [(str(m), '%.2f %s' % (r.value, r.unit),
                         m.description.split('\n')[0]) for
-                       (m, r) in self.results[state].iteritems()]
+                       (m, r) in self.results[state].items()]
         pre = markup.page()
+        pre.p(self.foreword)
         pre.div(class_='scaffold well')
         pre.strong('Flag performance summary')
         pre.add(str(gwhtml.table(['Metric', 'Result', 'Description'],
-                                 performance)))
+                                 performance, id=self.title)))
         pre.div.close()
         pre.h2('Figures of Merit')
         # write configuration table
@@ -353,7 +383,7 @@ class FlagTab(ParentTab):
         post.h2('Analysis configuration')
         post.div()
         post.table(class_='table table-condensed table-hover')
-        add_config_entry('Flags', '<br>'.join(map(str, self.flags)))
+        add_config_entry('Flags', '<br>'.join(list(map(str, self.flags))))
         if len(self.flags) > 1 and self.intersection:
             add_config_entry('Flag combination', 'Intersection (logical AND)')
         elif len(self.flags) > 1:
