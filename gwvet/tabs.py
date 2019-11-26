@@ -32,6 +32,7 @@ from glue.lal import Cache
 from gwpy.time import Time
 
 from gwdetchar.io import html as gwhtml
+from gwdetchar.plot import texify
 
 from gwsumm.channels import get_channel
 from gwsumm.segments import (get_segments, format_padding)
@@ -40,7 +41,6 @@ from gwsumm.tabs import get_tab, register_tab
 from gwsumm.plot import (get_plot, get_column_label)
 from gwsumm.utils import vprint
 from gwsumm.state import ALLSTATE
-from gwsumm.plot.utils import usetex_tex
 
 from . import etg
 from .core import evaluate_flag
@@ -227,13 +227,13 @@ class FlagTab(ParentTab):
                 sp = get_plot('segments')(self.flags, self.start, self.end,
                                           outdir=plotdir, labels=self.labels,
                                           title='Veto segments: %s' % (
-                                              usetex_tex(namestr)), **segargs)
+                                              texify(namestr)), **segargs)
             else:
                 sp = get_plot('segments')(
                     [self.metaflag] + self.flags, self.start, self.end,
                     labels=([self.intersection and 'Intersection' or 'Union'] +
                             self.labels), outdir=plotdir,
-                            title='Veto segments: %s' % usetex_tex(namestr),
+                            title='Veto segments: %s' % texify(namestr),
                             **segargs)
             self.plots.append(sp)
 
@@ -264,7 +264,7 @@ class FlagTab(ParentTab):
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
                     title='Impact of %s (%s)' % (
-                        usetex_tex(namestr), self.etg),
+                        texify(namestr), self.etg),
                     outdir=plotdir, labels=['After', 'Vetoed'],
                     **glitchgramargs))
 
@@ -282,7 +282,7 @@ class FlagTab(ParentTab):
                         column=params[column], etg=self.etg, outdir=plotdir,
                         filterstr=self.filterstr,
                         title='Impact of %s (%s)' % (
-                            usetex_tex(namestr), self.etg),
+                            texify(namestr), self.etg),
                         labels=['Before', 'After'], xlim=xlim,
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
@@ -315,8 +315,8 @@ class FlagTab(ParentTab):
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
                         title='%s after %s (%s)' % (
-                            usetex_tex(str(self.channel)),
-                            usetex_tex(namestr),
+                            texify(str(self.channel)),
+                            texify(namestr),
                             self.etg),
                         outdir=plotdir, filterstr=self.filterstr,
                         **glitchgramargs))
