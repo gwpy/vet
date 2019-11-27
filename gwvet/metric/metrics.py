@@ -19,8 +19,6 @@
 """This module defines a number of standard `metrics <Metric>`.
 """
 
-from __future__ import division
-
 import decorator
 import operator
 

@@ -19,10 +19,7 @@
 """Core evaluation methods for GWpy VET
 """
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
 
 from gwpy.segments import DataQualityFlag
 

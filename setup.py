@@ -20,12 +20,6 @@
 """Setup the GWpy VET (`gwvet`) package
 """
 
-from __future__ import print_function
-
-import sys
-if sys.version < '2.6':
-    raise ImportError("Python versions older than 2.6 are not supported.")
-
 import glob
 import os.path
 
@@ -34,9 +28,9 @@ from setuptools import (setup, find_packages)
 # set basic metadata
 PACKAGENAME = 'gwvet'
 DISTNAME = 'gwvet'
-AUTHOR = 'Duncan Macleod'
-AUTHOR_EMAIL = 'duncan.macleod@ligo.org'
-LICENSE = 'GPLv3'
+AUTHOR = 'Duncan Macleod, Alex Urban'
+AUTHOR_EMAIL = 'alexander.urban@ligo.org'
+LICENSE = 'GPL-3.0-or-later'
 
 cmdclass = {}
 
@@ -98,6 +92,12 @@ setup(name=DISTNAME,
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
       license=LICENSE,
+      url='https://github.com/gwpy/vet',
+      project_urls={
+          "Bug Tracker": "https://github.com/gwpy/vet/issues",
+          "Discussion Forum": "https://gwdetchar.slack.com",
+          "Source Code": "https://github.com/gwpy/vet",
+      },
       packages=packagenames,
       include_package_data=True,
       cmdclass=cmdclass,
@@ -110,15 +110,16 @@ setup(name=DISTNAME,
           'Programming Language :: Python',
           'Development Status :: 3 - Alpha',
           'Intended Audience :: Science/Research',
-          'Intended Audience :: End Users/Desktop',
-          'Intended Audience :: Developers',
+          ('License :: OSI Approved :: '
+           'GNU General Public License v3 or later (GPLv3+)'),
           'Natural Language :: English',
-          'Topic :: Scientific/Engineering',
+          'Operating System :: OS Independent',
+          'Programming Language :: Python',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
           'Topic :: Scientific/Engineering :: Astronomy',
           'Topic :: Scientific/Engineering :: Physics',
-          'Operating System :: POSIX',
-          'Operating System :: Unix',
-          'Operating System :: MacOS',
           'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
       ],
       )

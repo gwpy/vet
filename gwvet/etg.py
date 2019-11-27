@@ -19,8 +19,6 @@
 """ETG configurations
 """
 
-from six import string_types
-
 from gwsumm.utils import re_cchar
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
@@ -57,7 +55,7 @@ def get_etg_parameters(name, **kwargs):
     except KeyError:
         params = register_etg_parameters(canon)
     for key, val in params.items():
-        if isinstance(val, string_types):
+        if isinstance(val, str):
             params[key] = val.format(**kwargs)
     return params
 
