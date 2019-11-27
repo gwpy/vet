@@ -27,7 +27,7 @@ __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 from gwsumm.segments import get_segments  # noqa: F401
 from gwsumm.triggers import get_triggers  # noqa: F401
 
-from .metrics import (  # noqa: F401
+from .metric import (  # noqa: F401
     _use_dqflag,
     deadtime,
     efficiency,
