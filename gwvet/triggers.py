@@ -29,7 +29,7 @@ from gwsumm.triggers import (get_triggers, get_times)
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
-re_meta = re.compile('(\||:|\&)')
+re_meta = re.compile('(\||:|\&)')  # noqa: W605
 
 
 def veto(table, flag, tag='', channel='unknown-channel', etg='unknown-etg'):

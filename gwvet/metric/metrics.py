@@ -33,7 +33,7 @@ from gwpy.segments import DataQualityFlag
 
 from gwsumm.triggers import get_times
 
-from . import Metric
+from .core import Metric
 from .registry import (get_metric, register_metric)
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
@@ -75,6 +75,7 @@ def deadtime(segments):
         return 0
     return float(abs(segments.active)) / float(abs(segments.known)) * 100
 
+
 register_metric(Metric(deadtime, 'Deadtime', unit=Unit('%')))
 
 
@@ -102,6 +103,7 @@ def efficiency(segments, before, after=None):
         return (len(before) - len(after)) / len(before) * 100
     except ZeroDivisionError:
         return 0.
+
 
 register_metric(Metric(efficiency, 'Efficiency', unit=Unit('%')))
 
@@ -134,6 +136,7 @@ def efficiency_over_deadtime(segments, before, after=None):
     except ZeroDivisionError:
         return 0.
 
+
 register_metric(Metric(efficiency_over_deadtime, 'Efficiency/Deadtime',
                        unit=None))
 
@@ -156,6 +159,7 @@ def use_percentage(segments, before, after=None):
         return used / len(segments.active) * 100
     except ZeroDivisionError:
         return 0.
+
 
 register_metric(Metric(
     use_percentage, 'Use percentage', unit=Unit('%')))
@@ -201,6 +205,7 @@ def safety(segments, injections, threshold=SAFETY_THRESHOLD):
     # statistical significance
     prob = 1 - poisson.cdf(numveto - 1, numexp)
     return prob < threshold
+
 
 register_metric(Metric(safety, 'Safety', unit=None))
 

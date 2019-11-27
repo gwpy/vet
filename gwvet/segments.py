@@ -28,7 +28,8 @@ from glue.lal import Cache
 from dqsegdb import urifunctions
 
 from gwpy.time import to_gps
-from gwpy.segments import *
+from gwpy.segments import (Segment, SegmentList,
+                           DataQualityFlag, DataQualityDict)
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
@@ -54,7 +55,8 @@ def get_segments(flags, segments, cache=None,
 
     Returns
     -------
-    segments : `~gwpy.segments.DataQualityFlag` or `~gwpy.segments.DataQualityDict`
+    segments : `~gwpy.segments.DataQualityFlag`,
+               `~gwpy.segments.DataQualityDict`
         a single `~gwpy.segments.DataQualityFlag` (if ``flags`` is given
         as a `str`), or a `~gwpy.segments.DataQualityDict` (if ``flags``
         is given as a `list`)
@@ -75,7 +77,7 @@ def get_segments(flags, segments, cache=None,
     # populate an existing set of flags
     if isinstance(flags, (DataQualityFlag, DataQualityDict)):
         return flags.populate(source=cache or url, segments=segments,
-                               **kwargs)
+                              **kwargs)
     # query one flag
     elif cache is None and isinstance(flags, str):
         return DataQualityFlag.query(flags, segments, url=url, **kwargs)

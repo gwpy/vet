@@ -16,8 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with GWpy VET.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Gravitational-Wave Veto Evaluation and Testing suite.
-
+"""Gravitational-Wave Veto Evaluation and Testing suite
 """
 
 from ._version import get_versions
@@ -25,9 +24,18 @@ from ._version import get_versions
 __version__ = get_versions()['version']
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
-from gwsumm.segments import get_segments
-from gwsumm.triggers import get_triggers
+from gwsumm.segments import get_segments  # noqa: F401
+from gwsumm.triggers import get_triggers  # noqa: F401
 
-from .metric import *
+from .metric import (  # noqa: F401
+    _use_dqflag,
+    deadtime,
+    efficiency,
+    efficiency_over_deadtime,
+    use_percentage,
+    safety,
+    loudest_event_metric_factory,
+    metric_by_column_value_factory,
+)
 
 del get_versions

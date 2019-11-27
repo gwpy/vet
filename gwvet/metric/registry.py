@@ -28,13 +28,13 @@ __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
 _METRICS = {}
 
-REGEX_METRIC_FACTORY = re.compile(
-    '(?P<metric>(.*))\|(\s+)?'  # match metric name
+REGEX_METRIC_FACTORY = re.compile(  # noqa W605
+    '(?P<metric>(.*))\|(\s+)?'  # match metric name,
     '(?P<column>[\w\s]+)(\s+)?'  # match column name
     '(?P<operator>[<>=!]+)(\s+)?'  # match operator
     '(?P<value>(.*))\Z'  # match value (arbitrary text)
 )
-REGEX_LOUDEST_EVENT_FACTORY = re.compile(
+REGEX_LOUDEST_EVENT_FACTORY = re.compile(  # noqa W605
     'loudest event by (?P<column>[\w\s]+)', re.I)
 
 
@@ -86,7 +86,7 @@ def get_metric(name):
         # match metric with column restrictions
         try:
             match = REGEX_METRIC_FACTORY.match(name).groupdict()
-        except AttributeError as e:
+        except AttributeError:
             pass
         else:
             from .metrics import metric_by_column_value_factory
@@ -96,7 +96,7 @@ def get_metric(name):
         # match loudest event metric
         try:
             match = REGEX_LOUDEST_EVENT_FACTORY.match(name).groupdict()
-        except AttributeError as e:
+        except AttributeError:
             pass
         else:
             from .metrics import loudest_event_metric_factory

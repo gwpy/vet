@@ -77,7 +77,9 @@ install_requires = [
     'scipy',
 ]
 tests_require = [
-    'pytest'
+    'pytest>=2.8,<3.7',
+    'pytest-cov',
+    'flake8',
 ]
 extras_require = {
     'doc': ['sphinx', 'numpydoc', 'sphinx_rtd_theme', 'sphinxcontrib-epydoc'],

@@ -21,16 +21,11 @@
 
 import os.path
 
-from gwpy.utils import gprint
-from gwpy.segments import (Segment, SegmentList, DataQualityFlag)
+from gwpy.segments import Segment
 
-from gwsumm.channels import get_channel
-from gwsumm.segments import get_segments
 from gwsumm.state import (generate_all_state, SummaryState)
-from gwsumm.triggers import get_triggers
 from gwsumm.utils import vprint
 
-from ..core import evaluate_flag
 from ..tabs import FlagTab
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
