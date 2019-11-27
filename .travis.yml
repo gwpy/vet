@@ -8,7 +8,6 @@ python:
 
 before_install:
   - python -m pip install -q --upgrade pip
-  - python -m pip install lalsuite
   - python -m pip install -r requirements.txt
 
 install:
@@ -18,14 +17,10 @@ script:
   # run flake8
   - python -m flake8 gwvet/**/*.py
   - python -m flake8 bin/*
-  # run --help on all scripts (just to check for missing imports, etc)
-  - |
-    set -e
-    for EXE in bin/*; do
-        echo "$ $(basename $EXE) --help"
-        $(basename $EXE) --help 1> /dev/null
-    done
-    set +e
+  # test executables
+  - python -m coverage run --append $(which gwvet) --help
+  - python -m coverage run --append $(which gwvet-hug) --help
+  - python -m coverage run --append $(which gwvet-vdf) --help
 
 cache:
   pip: true
