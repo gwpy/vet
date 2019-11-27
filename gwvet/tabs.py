@@ -367,9 +367,9 @@ class FlagTab(ParentTab):
                        (m, r) in self.results[state].items()]
         pre = markup.page()
         pre.p(self.foreword)
-        pre.h5('Flag performance summary', class_='mt-4')
+        pre.h4('Flag performance summary', class_='mt-4')
         pre.add(str(gwhtml.table(['Metric', 'Result', 'Description'],
-                                 performance, id=self.title)))
+                                 performance, id=self.title, th='th-lg')))
         pre.h2('Figures of Merit', class_='mt-4 mb-2')
         # write configuration table
         post = markup.page()
