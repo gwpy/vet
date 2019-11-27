@@ -32,15 +32,15 @@ from glue.lal import Cache
 from gwpy.time import Time
 
 from gwdetchar.io import html as gwhtml
+from gwdetchar.plot import texify
 
-from gwsumm.data import get_channel
+from gwsumm.channels import get_channel
 from gwsumm.segments import (get_segments, format_padding)
 from gwsumm.triggers import get_triggers
 from gwsumm.tabs import get_tab, register_tab
 from gwsumm.plot import (get_plot, get_column_label)
 from gwsumm.utils import vprint
 from gwsumm.state import ALLSTATE
-from gwsumm.plot.utils import usetex_tex
 
 from . import etg
 from .core import evaluate_flag
@@ -227,13 +227,13 @@ class FlagTab(ParentTab):
                 sp = get_plot('segments')(self.flags, self.start, self.end,
                                           outdir=plotdir, labels=self.labels,
                                           title='Veto segments: %s' % (
-                                              usetex_tex(namestr)), **segargs)
+                                              texify(namestr)), **segargs)
             else:
                 sp = get_plot('segments')(
                     [self.metaflag] + self.flags, self.start, self.end,
                     labels=([self.intersection and 'Intersection' or 'Union'] +
                             self.labels), outdir=plotdir,
-                            title='Veto segments: %s' % usetex_tex(namestr),
+                            title='Veto segments: %s' % texify(namestr),
                             **segargs)
             self.plots.append(sp)
 
@@ -264,7 +264,7 @@ class FlagTab(ParentTab):
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,
                     title='Impact of %s (%s)' % (
-                        usetex_tex(namestr), self.etg),
+                        texify(namestr), self.etg),
                     outdir=plotdir, labels=['After', 'Vetoed'],
                     **glitchgramargs))
 
@@ -282,7 +282,7 @@ class FlagTab(ParentTab):
                         column=params[column], etg=self.etg, outdir=plotdir,
                         filterstr=self.filterstr,
                         title='Impact of %s (%s)' % (
-                            usetex_tex(namestr), self.etg),
+                            texify(namestr), self.etg),
                         labels=['Before', 'After'], xlim=xlim,
                         xlabel=params.get('%s-label' % column,
                                           get_column_label(params[column])),
@@ -315,8 +315,8 @@ class FlagTab(ParentTab):
                     self.plots.append(get_plot('triggers')(
                         [after], self.start, self.end, state=state,
                         title='%s after %s (%s)' % (
-                            usetex_tex(str(self.channel)),
-                            usetex_tex(namestr),
+                            texify(str(self.channel)),
+                            texify(namestr),
                             self.etg),
                         outdir=plotdir, filterstr=self.filterstr,
                         **glitchgramargs))
@@ -367,12 +367,10 @@ class FlagTab(ParentTab):
                        (m, r) in self.results[state].items()]
         pre = markup.page()
         pre.p(self.foreword)
-        pre.div(class_='scaffold well')
-        pre.strong('Flag performance summary')
+        pre.h4('Flag performance summary', class_='mt-4')
         pre.add(str(gwhtml.table(['Metric', 'Result', 'Description'],
                                  performance, id=self.title)))
-        pre.div.close()
-        pre.h2('Figures of Merit')
+        pre.h2('Figures of Merit', class_='mt-4 mb-2')
         # write configuration table
         post = markup.page()
         def add_config_entry(title, entry):
@@ -380,9 +378,9 @@ class FlagTab(ParentTab):
             post.th(title)
             post.td(entry)
             post.tr.close()
-        post.h2('Analysis configuration')
+        post.h2('Analysis configuration', class_='mt-4')
         post.div()
-        post.table(class_='table table-condensed table-hover')
+        post.table(class_='table table-sm table-hover')
         add_config_entry('Flags', '<br>'.join(list(map(str, self.flags))))
         if len(self.flags) > 1 and self.intersection:
             add_config_entry('Flag combination', 'Intersection (logical AND)')
@@ -398,27 +396,26 @@ class FlagTab(ParentTab):
         add_config_entry('Event trigger generator', str(self.etg))
         post.table.close()
         post.div.close()
-        post.h2('Segment information')
-        post.div(class_='panel-group', id="accordion")
+        post.h2('Segment information', class_='mt-4')
+        post.div(class_='mt-2', id="accordion")
         for i, flag in enumerate([self.metaflag] + self.flags):
             flag = get_segments(flag, state.active, query=False,
                                 padding=self.padding).copy()
-            post.div(class_='panel well panel-primary')
-            post.div(class_='panel-heading')
-            post.a(href='#flag%d' % i, **{'data-toggle': 'collapse',
-                                          'data-parent': '#accordion'})
+            post.div(class_='card border-info mb-1 shadow-sm')
+            post.div(class_='card-header text-white bg-info')
             if i == 0:
-                post.h4(self.intersection and 'Intersection' or 'Union',
-                        class_='panel-title')
+                title = self.intersection and 'Intersection' or 'Union'
             elif self.labels[i-1] != str(flag):
-                post.h4('%s (%s)' % (flag.name, self.labels[i-1]),
-                        class_='panel-title')
+                title = '%s (%s)' % (flag.name, self.labels[i-1])
             else:
-                post.h4(flag.name, class_='panel-title')
-            post.a.close()
-            post.div.close()
-            post.div(id_='flag%d' % i, class_='panel-collapse collapse')
-            post.div(class_='panel-body')
+                title = flag.name
+            post.a(title, class_='card-link cis-link collapsed',
+                   href='#flag%d' % i, **{'data-toggle': 'collapse',
+                                          'aria-expanded': 'false'})
+            post.div.close()  # card-header
+            post.div(id_='flag%d' % i, class_='collapse',
+                     **{'data-parent': '#accordion'})
+            post.div(class_='card-body')
             # write segment summary
             post.p('This flag was defined and had a known state during '
                    'the following segments:')
@@ -426,10 +423,9 @@ class FlagTab(ParentTab):
             # write segment table
             post.p('This flag was active during the following segments:')
             post.add(self.print_segments(flag.active))
-
-            post.div.close()
-            post.div.close()
-            post.div.close()
+            post.div.close()  # card-body
+            post.div.close()  # collapse
+            post.div.close()  # card
         post.div.close()
 
         # then write standard data tab
