@@ -361,7 +361,7 @@ class FlagTab(ParentTab):
         def format_result(res):
             fmt = '%d' if (res.value < 0.01 or (
                 res.unit == Unit('%') and res.value > 99.99)) else '%.2f'
-            return ''.join([fmt % res.value, res.unit])
+            return ''.join([fmt % res.value, str(res.unit)])
 
         def add_config_entry(page, title, entry):
             page.tr()
