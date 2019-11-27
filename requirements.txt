@@ -1,3 +1,7 @@
+# build requirements
+setuptools
+
+# core requirements
 astropy>=1.0
 decorator
 dqsegdb
@@ -10,3 +14,9 @@ MarkupPy
 matplotlib>=1.5
 numpy>=1.7
 scipy
+
+# testing extras
+pytest>=2.8,<3.7
+pytest-cov
+coverage
+flake8
