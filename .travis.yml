@@ -15,6 +15,9 @@ install:
   - python -m pip install .
 
 script:
+  # run flake8
+  - python -m flake8 .
+  - python -m flake8 bin/*
   # run --help on all scripts (just to check for missing imports, etc)
   - |
     set -e
