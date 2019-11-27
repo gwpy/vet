@@ -70,7 +70,7 @@ install_requires = [
     'gwpy>=1.0.0',
     'gwsumm>=1.0.0',
     'gwtrigfind',
-    'lscsoft-glue',
+    'lscsoft-glue>=1.60.0',
     'MarkupPy',
     'matplotlib>=1.5',
     'numpy>=1.7',
