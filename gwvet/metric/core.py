@@ -36,12 +36,6 @@ except ImportError:
 
 from astropy.units import (Quantity, Unit, dimensionless_unscaled)
 
-from .registry import (
-    register_metric,
-    get_all_metrics,
-    get_metric,
-)
-
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
 re_quote = re.compile(r'^[\s\"\']+|[\s\"\']+$')
