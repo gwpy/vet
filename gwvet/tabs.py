@@ -20,10 +20,7 @@
 """
 
 import os
-try:
-    from configparser import NoOptionError
-except ImportError:  # python < 3
-    from ConfigParser import NoOptionError
+from configparser import NoOptionError
 
 from astropy.units import Unit
 from MarkupPy import markup

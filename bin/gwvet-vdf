@@ -3,8 +3,6 @@
 """Analyse a veto definer file in full using the GWpy VET package
 """
 
-from __future__ import print_function
-
 import os
 import sys
 import re

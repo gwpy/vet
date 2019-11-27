@@ -18,21 +18,12 @@
 
 """Core utilities and classes for common VET metrics
 """
-from __future__ import absolute_import
 
+import builtins
 import imp
 import inspect
 import re
-
-try:
-    from importlib import import_module
-except ImportError:
-    import_module = __import__
-
-try:
-    import __builtin__ as builtin
-except ImportError:
-    import builtins as builtin
+from importlib import import_module
 
 from astropy.units import (Quantity, Unit, dimensionless_unscaled)
 
@@ -238,7 +229,7 @@ class Metric(object):
             modulename, methodname = methodstr.rsplit('.', 1)
         except ValueError:
             methodname = methodstr
-            method = getattr(builtin, methodname)
+            method = getattr(builtins, methodname)
         else:
             module = import_module(modulename)
             method = getattr(module, methodname)

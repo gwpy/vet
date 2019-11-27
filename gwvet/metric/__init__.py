@@ -25,7 +25,6 @@ GWpy VET defines a custom `Metric` object, designed to wrap existing
 figure-of-merit functions into a standard format such that they can be
 applied conveniently to a set of segments and event triggers.
 """
-from __future__ import absolute_import
 
 from .core import (  # noqa: F401
     Metric,

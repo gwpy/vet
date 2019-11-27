@@ -28,14 +28,14 @@ __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
 _METRICS = {}
 
-REGEX_METRIC_FACTORY = re.compile(  # noqa W605
-    '(?P<metric>(.*))\|(\s+)?'  # match metric name,
-    '(?P<column>[\w\s]+)(\s+)?'  # match column name
-    '(?P<operator>[<>=!]+)(\s+)?'  # match operator
-    '(?P<value>(.*))\Z'  # match value (arbitrary text)
+REGEX_METRIC_FACTORY = re.compile(
+    r'(?P<metric>(.*))\|(\s+)?'  # match metric name,
+    r'(?P<column>[\w\s]+)(\s+)?'  # match column name
+    r'(?P<operator>[<>=!]+)(\s+)?'  # match operator
+    r'(?P<value>(.*))\Z'  # match value (arbitrary text)
 )
-REGEX_LOUDEST_EVENT_FACTORY = re.compile(  # noqa W605
-    'loudest event by (?P<column>[\w\s]+)', re.I)
+REGEX_LOUDEST_EVENT_FACTORY = re.compile(
+    r'loudest event by (?P<column>[\w\s]+)', re.I)
 
 
 def register_metric(metric, name=None, force=False):
