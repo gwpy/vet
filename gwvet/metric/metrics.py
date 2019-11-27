@@ -33,7 +33,7 @@ from gwpy.segments import DataQualityFlag
 
 from gwsumm.triggers import get_times
 
-from . import Metric
+from .core import Metric
 from .registry import (get_metric, register_metric)
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
