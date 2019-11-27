@@ -25,6 +25,7 @@ try:
 except ImportError:  # python < 3
     from ConfigParser import NoOptionError
 
+from astropy.units import Unit
 from MarkupPy import markup
 
 from glue.lal import Cache
@@ -44,7 +45,7 @@ from gwsumm.state import ALLSTATE
 
 from . import etg
 from .core import evaluate_flag
-from .triggers import (re_meta, veto_tag)
+from .triggers import veto_tag
 from .metric import get_metric
 
 from matplotlib import rcParams
@@ -156,13 +157,13 @@ class FlagTab(ParentTab):
         kwargs.setdefault(
             'metrics',
             [get_metric(f.strip('\n ')) for f in
-                 config.get(section, 'metrics').split(',')])
+                config.get(section, 'metrics').split(',')])
         # get labels
         try:
             kwargs.setdefault(
                 'labels',
                 [f.strip('\n ') for f in
-                     config.get(section, 'labels').split(',')])
+                    config.get(section, 'labels').split(',')])
         except NoOptionError:
             pass
         # get ETG params
@@ -208,13 +209,7 @@ class FlagTab(ParentTab):
 
         This method is a mess, and should be re-written in a better way.
         """
-        if self.intersection:
-            label = 'Intersection'
-        else:
-            label = 'Union'
-
         namestr = self.title.split('/')[0]
-
         before = get_channel(str(self.channel))
         for state in self.states:
             # -- configure segment plot
@@ -233,12 +228,11 @@ class FlagTab(ParentTab):
                     [self.metaflag] + self.flags, self.start, self.end,
                     labels=([self.intersection and 'Intersection' or 'Union'] +
                             self.labels), outdir=plotdir,
-                            title='Veto segments: %s' % texify(namestr),
-                            **segargs)
+                    title='Veto segments: %s' % texify(namestr), **segargs)
             self.plots.append(sp)
 
             if self.channel:
-                self.set_layout([2,])
+                self.set_layout([2, ])
                 after = get_channel(veto_tag(before, self.metaflag,
                                              mode='after'))
                 vetoed = get_channel(veto_tag(before, self.metaflag,
@@ -323,7 +317,7 @@ class FlagTab(ParentTab):
                     self.layout.append(2)
 
             else:
-                self.set_layout([1,])
+                self.set_layout([1, ])
 
     def process_state(self, state, *args, **kwargs):
         config = kwargs.get('config', None)
@@ -361,10 +355,26 @@ class FlagTab(ParentTab):
         return super(FlagTab, self).process_state(state, *args, **kwargs)
 
     def write_state_html(self, state):
+        """Write the content of inner HTML for the given state
+        """
+
+        def format_result(res):
+            fmt = '%d' if (res.value < 0.01 or (
+                res.unit == Unit('%') and res.value > 99.99)) else '%.2f'
+            return ''.join([fmt % res.value, res.unit])
+
+        def add_config_entry(page, title, entry):
+            page.tr()
+            page.th(title)
+            page.td(entry)
+            page.tr.close()
+
         # write results table
-        performance = [(str(m), '%.2f %s' % (r.value, r.unit),
-                        m.description.split('\n')[0]) for
-                       (m, r) in self.results[state].items()]
+        performance = [(
+            str(m),
+            format_result(r),
+            m.description.split('\n')[0],
+        ) for (m, r) in self.results[state].items()]
         pre = markup.page()
         pre.p(self.foreword)
         pre.h4('Flag performance summary', class_='mt-4')
@@ -373,27 +383,25 @@ class FlagTab(ParentTab):
         pre.h2('Figures of Merit', class_='mt-4 mb-2')
         # write configuration table
         post = markup.page()
-        def add_config_entry(title, entry):
-            post.tr()
-            post.th(title)
-            post.td(entry)
-            post.tr.close()
         post.h2('Analysis configuration', class_='mt-4')
         post.div()
         post.table(class_='table table-sm table-hover')
-        add_config_entry('Flags', '<br>'.join(list(map(str, self.flags))))
+        add_config_entry(
+            post, 'Flags', '<br>'.join(list(map(str, self.flags))))
         if len(self.flags) > 1 and self.intersection:
-            add_config_entry('Flag combination', 'Intersection (logical AND)')
+            add_config_entry(
+                post, 'Flag combination', 'Intersection (logical AND)')
         elif len(self.flags) > 1:
-            add_config_entry('Flag combination', 'Union (logical OR)')
-        add_config_entry('Analysis start time', '%s (%s)' % (
+            add_config_entry(
+                post, 'Flag combination', 'Union (logical OR)')
+        add_config_entry(post, 'Analysis start time', '%s (%s)' % (
             str(Time(float(self.start), format='gps', scale='utc').iso),
             self.start))
-        add_config_entry('Analysis end time', '%s (%s)' % (
+        add_config_entry(post, 'Analysis end time', '%s (%s)' % (
             str(Time(float(self.end), format='gps', scale='utc').iso),
             self.end))
-        add_config_entry('Event trigger channel', str(self.channel))
-        add_config_entry('Event trigger generator', str(self.etg))
+        add_config_entry(post, 'Event trigger channel', str(self.channel))
+        add_config_entry(post, 'Event trigger generator', str(self.etg))
         post.table.close()
         post.div.close()
         post.h2('Segment information', class_='mt-4')
@@ -431,5 +439,6 @@ class FlagTab(ParentTab):
         # then write standard data tab
         return super(get_tab('default'), self).write_state_html(
             state, plots=True, pre=pre, post=post)
+
 
 register_tab(FlagTab)

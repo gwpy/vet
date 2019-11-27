@@ -237,29 +237,28 @@ for name, flag in vdf.items():
         pass
 
 # find the states and segments for each category
-states = dict()
+states, after, oldtitle = (dict(), None, '')
 for i, category in enumerate(categories):
     title = isinstance(category, int) and 'Cat %d' % category or category
     tag = re_cchar.sub('_', str(title).upper())
-    if i:
-        states[category] = SummaryState('After %s' % oldtitle, key=tag,
-                                        known=after.known,
-                                        active=after.active,
-                                        definition=after.name)
-    else:
-        states[category] = SummaryState(args.analysis_name,
-                                        key=args.analysis_name,
-                                        definition=asegments.name)
+    states[category] = SummaryState(
+        'After %s' % oldtitle,
+        key=tag,
+        known=after.known,
+        active=after.active,
+        definition=after.name,
+    ) if i else SummaryState(
+            args.analysis_name,
+            key=args.analysis_name,
+            definition=asegments.name,
+    )
     try:
         segs = flags[category].union()
     except TypeError:  # no flags
         segs = DataQualityFlag()
     segs.name = '%s:VET-ANALYSIS_%s:0' % (ifo, tag)
     ALLSEGMENTS[segs.name] = segs
-    if i:
-        after = after - segs
-    else:
-        after = asegments - segs
+    after = (after - segs) if i else (asegments - segs)
     after.name = '%s:VET-ANALYSIS_AFTER_%s:0' % (ifo, tag)
     ALLSEGMENTS[after.name] = after
     oldtitle = title
@@ -342,7 +341,7 @@ for category in categories:
         config.set(tab, 'index',
                    '%(gps-start-time)s-%(gps-end-time)s/index.html')
     for key, value in plots:
-        if re.match('%\(flags\)s (?:plot-)?segments', value):
+        if re.match('%\(flags\)s (?:plot-)?segments', value):  # noqa: W605
             config.set(tab, key, '%%(union)s,%s' % value)
             if '%s-labels' % key not in plots:
                 config.set(tab, '%s-labels' % key, 'Union,%(flags)s')

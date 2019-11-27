@@ -29,15 +29,8 @@ arguments given explicitly on the command-line take precedence.
 
 import argparse
 import os.path
-import sys
 
-try:
-    from configparser import ConfigParser
-except ImportError:
-    from ConfigParser import ConfigParser
-
-from gwpy.segments import (DataQualityFlag, DataQualityDict)
-from gwpy.time import (to_gps, Time)
+from gwpy.time import to_gps
 
 from gwsumm import globalv
 from gwsumm.config import GWSummConfigParser
@@ -57,13 +50,9 @@ class ParseGPS(argparse.Action):
     """Parse arbitrary input into GPS format from command-line
     """
     def __call__(self, parser, namespace, values, option_string=None):
-        try:
-            values = float(values)
-        except ValueError:
-            format = None
-        else:
-            format = 'gps'
+        values = float(values)
         setattr(namespace, self.dest, to_gps(values))
+
 
 prog = os.path.basename(__file__)
 
@@ -76,8 +65,8 @@ parser.add_argument('-V', '--version', action='version', version=__version__)
 
 sharedopts = argparse.ArgumentParser(add_help=False)
 sharedopts.add_argument('-v', '--verbose', action='store_true', default=False,
-                    help="print verbose progress to stdout, "
-                         "default: %(default)s")
+                        help="print verbose progress to stdout, "
+                             "default: %(default)s")
 
 genopts = sharedopts.add_argument_group(
     'General options',
@@ -88,7 +77,8 @@ genopts.add_argument('-e', '--gps-end-time', action=ParseGPS,
                      help='GPS end time for study.', required=True)
 genopts.add_argument('-m', '--metric', action='append', dest='metrics',
                      metavar='METRIC',
-                     help='metric to use in study, can be given multiple times')
+                     help='metric to use in study, can be given '
+                          'multiple times')
 
 trigopts = sharedopts.add_argument_group(
     "Event trigger options",
@@ -120,7 +110,8 @@ outopts.add_argument('-o', '--html-dir', default=None,
                      help='target directory for output HTML, '
                           'default: %(default)s')
 outopts.add_argument('-l', '--label', default='Vetoes',
-                     help='text label for plots and HTML, default: %(default)s')
+                     help='text label for plots and HTML, '
+                          'default: %(default)s')
 
 subparsers = parser.add_subparsers(
     dest='mode', title='Select one of the following study modes',
@@ -131,7 +122,8 @@ subparser = {}
 # Single-flag mode
 
 for action, mod in ACTIONS.items():
-    subparser[action] = mod.add_command_line_arguments(subparsers, [sharedopts])
+    subparser[action] = mod.add_command_line_arguments(
+        subparsers, [sharedopts])
 
 # -----------------------------------------------------------------------------
 # parse and execute

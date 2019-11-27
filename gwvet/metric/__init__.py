@@ -21,7 +21,9 @@
 Metrics
 #######
 
-GWpy VET defines a custom `Metric` object, designed to wrap existing figure-of-merit functions into a standard format such that they can be applied conveniently to a set of segments and event triggers.
+GWpy VET defines a custom `Metric` object, designed to wrap existing
+figure-of-merit functions into a standard format such that they can be
+applied conveniently to a set of segments and event triggers.
 """
 from __future__ import absolute_import
 
@@ -41,9 +43,21 @@ except ImportError:
 
 from astropy.units import (Quantity, Unit, dimensionless_unscaled)
 
-from gwpy.segments import DataQualityFlag
-
-from .registry import (register_metric, get_all_metrics, get_metric)
+from .registry import (
+    register_metric,
+    get_all_metrics,
+    get_metric,
+)
+from .metrics import (  # noqa: F401
+    _use_dqflag,
+    deadtime,
+    efficiency,
+    efficiency_over_deadtime,
+    use_percentage,
+    safety,
+    loudest_event_metric_factory,
+    metric_by_column_value_factory,
+)
 
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 __all__ = ['Metric', 'register_metric', 'get_metric', 'get_all_metrics',
@@ -251,7 +265,7 @@ class Metric(object):
             methodname = methodstr
             method = getattr(builtin, methodname)
         else:
-            module = importlib.import_module(modulename)
+            module = import_module(modulename)
             method = getattr(module, methodname)
 
         return cls(method, name=name, description=description, unit=unit)
@@ -323,9 +337,6 @@ class Metric(object):
 
         return cls(method, name=methodname, description=description, unit=unit)
 
-# import standard metrics
-from .metrics import *
-
 
 def read_all(pyfile):
     """Imports all metrics present in a given file.
@@ -347,15 +358,16 @@ def read_all(pyfile):
         # get module name and import from 'pyfile' file
         modname = pyfile.split('/')[-1].strip('.py')
         mod = imp.load_source(modname, pyfile)
-    except IOError:
-        raise Exception('File %r not found.' % pyfile)
+    except IOError as e:
+        raise type(e)('File %r not found.' % pyfile)
     # loop over all functions in file and add them
     metricList = []
     for method in inspect.getmembers(mod):
         if inspect.isfunction(method):
             description = method.__doc__ or ''
-            out.append(Metric(method, name=method.__name__,
-                              description=description))
+            metricList.append(
+                Metric(method, name=method.__name__,
+                       description=description))
 
     return metricList
 
@@ -386,9 +398,10 @@ def evaluate(segments, triggers, metrics):
 
     elif isinstance(metrics, list):
         results = []
-        for metric in metrics: results.append(metric(segments, triggers))
+        for metric in metrics:
+            results.append(metric(segments, triggers))
 
     else:
-         raise Exception('Third argument must be a metric or list of metrics.')
+        raise Exception('Third argument must be a metric or list of metrics.')
 
     return results

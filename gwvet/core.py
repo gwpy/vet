@@ -45,7 +45,8 @@ def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
         the set of analysis event triggers against which to test
     metrics : `list`, optional
         the list of `Metrics <~gwvet.Metric>`
-    injections : `~glue.ligolw.table.Table`, `~gwpy.segments.SegmentList`, optional
+    injections : `~glue.ligolw.table.Table`, `~gwpy.segments.SegmentList`,
+                  optional
         a list of injections, or injection segments, against which to test
         flag safety
     minduration : `float`, optional
@@ -65,7 +66,7 @@ def evaluate_flag(flag, triggers=None, metrics=['deadtime'], injections=None,
     # get inverse of veto segments
     if minduration:
         post = type(flag.known)([s for s in (flag.known - flag.active)
-                             if float(abs(s)) >= minduration])
+                                 if float(abs(s)) >= minduration])
         flag.active = flag.known - post
 
     # apply vetoes to triggers
