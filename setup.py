@@ -52,10 +52,8 @@ else:
 
 # -- dependencies -------------------------------------------------------------
 
-setup_requires = [
-    'setuptools',
-    'pytest-runner',
-]
+setup_requires = ['pytest-runner'] if {
+    'pytest', 'test'}.intersection(sys.argv) else []
 install_requires = [
     'astropy>=1.0',
     'decorator',
@@ -88,41 +86,44 @@ scripts = glob.glob(os.path.join('bin', '*'))
 with open('README.rst', 'rb') as f:
     longdesc = f.read().decode().strip()
 
-setup(name=DISTNAME,
-      provides=[PACKAGENAME],
-      version=__version__,
-      description=None,
-      long_description=longdesc,
-      author=AUTHOR,
-      author_email=AUTHOR_EMAIL,
-      license=LICENSE,
-      url='https://github.com/gwpy/vet',
-      project_urls={
-          "Bug Tracker": "https://github.com/gwpy/vet/issues",
-          "Discussion Forum": "https://gwdetchar.slack.com",
-          "Source Code": "https://github.com/gwpy/vet",
-      },
-      packages=packagenames,
-      include_package_data=True,
-      cmdclass=cmdclass,
-      scripts=scripts,
-      setup_requires=setup_requires,
-      install_requires=install_requires,
-      extras_require=extras_require,
-      use_2to3=False,
-      classifiers=[
-          'Programming Language :: Python',
-          'Development Status :: 3 - Alpha',
-          'Intended Audience :: Science/Research',
-          ('License :: OSI Approved :: '
-           'GNU General Public License v3 or later (GPLv3+)'),
-          'Natural Language :: English',
-          'Operating System :: OS Independent',
-          'Programming Language :: Python',
-          'Programming Language :: Python :: 3.5',
-          'Programming Language :: Python :: 3.6',
-          'Programming Language :: Python :: 3.7',
-          'Topic :: Scientific/Engineering :: Astronomy',
-          'Topic :: Scientific/Engineering :: Physics',
-      ],
-      )
+setup(
+    name=DISTNAME,
+    provides=[PACKAGENAME],
+    version=__version__,
+    description=("an extension to the python toolbox GWSumm, used by the LIGO "
+                 "Scientific Collaboration to review data-quality vetoes"),
+    long_description=longdesc,
+    author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
+    license=LICENSE,
+    url='https://github.com/gwpy/vet',
+    project_urls={
+        "Bug Tracker": "https://github.com/gwpy/vet/issues",
+        "Discussion Forum": "https://gwdetchar.slack.com",
+        "Source Code": "https://github.com/gwpy/vet",
+    },
+    packages=packagenames,
+    include_package_data=True,
+    cmdclass=cmdclass,
+    scripts=scripts,
+    setup_requires=setup_requires,
+    install_requires=install_requires,
+    tests_require=tests_require,
+    extras_require=extras_require,
+    use_2to3=False,
+    classifiers=[
+        'Programming Language :: Python',
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Science/Research',
+        ('License :: OSI Approved :: '
+         'GNU General Public License v3 or later (GPLv3+)'),
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Topic :: Scientific/Engineering :: Astronomy',
+        'Topic :: Scientific/Engineering :: Physics',
+    ],
+)
