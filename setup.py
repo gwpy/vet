@@ -84,11 +84,15 @@ extras_require = {
 packagenames = find_packages()
 scripts = glob.glob(os.path.join('bin', '*'))
 
+# read description
+with open('README.rst', 'rb') as f:
+    longdesc = f.read().decode().strip()
+
 setup(name=DISTNAME,
       provides=[PACKAGENAME],
       version=__version__,
       description=None,
-      long_description=None,
+      long_description=londesc,
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
       license=LICENSE,
@@ -120,6 +124,5 @@ setup(name=DISTNAME,
           'Programming Language :: Python :: 3.7',
           'Topic :: Scientific/Engineering :: Astronomy',
           'Topic :: Scientific/Engineering :: Physics',
-          'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
       ],
       )
