@@ -20,6 +20,7 @@
 """Setup the GWpy VET (`gwvet`) package
 """
 
+import sys
 import glob
 import os.path
 
