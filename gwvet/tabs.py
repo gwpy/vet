@@ -254,7 +254,7 @@ class FlagTab(ParentTab):
                     'ylabel': params.get(
                         'frequency-label',
                         get_column_label(params['frequency'])),
-                    'ylim': params.get('ylim', [10,5000]),
+                    'ylim': params.get('ylim', [10, 5000]),
                     'edgecolor': 'none',
                     'legend-scatterpoints': 1,
                     'legend-borderaxespad': 0,
