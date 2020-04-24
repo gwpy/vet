@@ -86,7 +86,7 @@ def get_canonical_etg_name(name):
 
 register_etg_parameters('omicron', **{
     'time': 'peak',
-    'ylim': [10,5000],
+    'ylim': [10, 5000],
 })
 register_etg_parameters('kleinewelle', time='peak', frequency='central_freq')
 register_etg_parameters('excesspower', time='peak', frequency='central_freq')
