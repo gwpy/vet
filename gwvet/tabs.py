@@ -103,6 +103,7 @@ class FlagTab(ParentTab):
                  segmentfile=None,
                  minseglength=0,
                  padding=(0, 0),
+                 glitchgramargs=None,
                  plotdir=os.curdir, states=list([ALLSTATE]), **kwargs):
         if len(flags) == 0:
             flags = [name]
@@ -121,6 +122,7 @@ class FlagTab(ParentTab):
         self.filterstr = None
         self.intersection = intersection
         self.padding = format_padding(self.flags, padding)
+        self.glitchgramargs = glitchgramargs
         if intersection:
             self.metaflag = '&'.join(list(map(str, self.flags)))
         else:
@@ -190,6 +192,14 @@ class FlagTab(ParentTab):
                                      combine)
                 else:
                     kwargs['intersection'] = False
+        # get glitchgram plotting arguments
+        kwargs['glitchgramargs'] = {key.split('glitchgram-')[1]: val for
+                                    (key, val) in config.items(section) if
+                                    key.startswith('glitchgram-')}
+        for key in kwargs['glitchgramargs']:
+            val = kwargs['glitchgramargs'][key]
+            if key in ['xlim', 'ylim'] and isinstance(val, str):
+                kwargs['glitchgramargs'][key] = eval(val)
         # make tab and return
         new = super(ParentTab, cls).from_ini(config, section, **kwargs)
         # get trigger filter
@@ -244,6 +254,7 @@ class FlagTab(ParentTab):
                     'ylabel': params.get(
                         'frequency-label',
                         get_column_label(params['frequency'])),
+                    'ylim': params.get('ylim', [10, 5000]),
                     'edgecolor': 'none',
                     'legend-scatterpoints': 1,
                     'legend-borderaxespad': 0,
@@ -251,6 +262,7 @@ class FlagTab(ParentTab):
                     'legend-loc': 'upper left',
                     'legend-frameon': False,
                 }
+                glitchgramargs.update(self.glitchgramargs)
                 # plot before/after glitchgram
                 self.plots.append(get_plot('triggers')(
                     [after, vetoed], self.start, self.end, state=state,

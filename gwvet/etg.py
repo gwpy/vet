@@ -84,7 +84,10 @@ def get_canonical_etg_name(name):
 # -----------------------------------------------------------------------------
 # register well known ETGs
 
-register_etg_parameters('omicron', time='peak')
+register_etg_parameters('omicron', **{
+    'time': 'peak',
+    'ylim': [10, 5000],
+})
 register_etg_parameters('kleinewelle', time='peak', frequency='central_freq')
 register_etg_parameters('excesspower', time='peak', frequency='central_freq')
 register_etg_parameters('cwb', **{
@@ -108,6 +111,7 @@ register_etg_parameters('ahope', **{
 register_etg_parameters('pycbc', **{
     'time': 'end_time',
     'frequency': 'template_duration',
+    'ylim': [0.1, 130],
     'det': 'new_snr',
     'det-limits': [6, 10],
     'det-scale': 'linear',
