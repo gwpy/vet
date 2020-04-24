@@ -194,7 +194,7 @@ class FlagTab(ParentTab):
                     kwargs['intersection'] = False
         # get glitchgram plotting arguments
         kwargs['glitchgramargs'] = {key.split('glitchgram-')[1]: val for
-                                    key, val in config.items(section) if
+                                    (key, val) in config.items(section) if
                                     key.startswith('glitchgram-')}
         for key in kwargs['glitchgramargs']:
             val = kwargs['glitchgramargs'][key]
