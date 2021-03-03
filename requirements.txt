@@ -2,21 +2,20 @@
 setuptools
 
 # core requirements
-astropy>=1.0
+astropy>=3.0.0
 decorator
 dqsegdb
-gwdetchar>=1.0.0
-gwpy>=1.0.0
-gwsumm>=1.0.1
+gwdetchar>=2.0.0
+gwpy>=2.0.0
+gwsumm>=2.0.0
 gwtrigfind
 lscsoft-glue>=1.60.0
 MarkupPy
-matplotlib>=1.5
-numpy>=1.7
+matplotlib>=3.1
+numpy>=1.16
 scipy
 
 # testing extras
-pytest>=2.8,<3.7
-pytest-cov
-coverage
 flake8
+pytest>=3.3.0
+pytest-cov>=2.4.0
