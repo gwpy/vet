@@ -85,7 +85,9 @@ def get_canonical_etg_name(name):
 # register well known ETGs
 
 register_etg_parameters('omicron', **{
-    'time': 'peak',
+    # omicron hdf5 columns
+    'time': 'time',
+    'frequency': 'frequency', 
     'ylim': [10, 5000],
 })
 register_etg_parameters('kleinewelle', time='peak', frequency='central_freq')
