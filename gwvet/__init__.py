@@ -39,4 +39,3 @@ from .metric import (  # noqa: F401
 )
 
 del get_versions
-
