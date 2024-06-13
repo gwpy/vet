@@ -21,7 +21,15 @@
 
 from json import loads as decode_json
 
-from astropy.io.registry import _get_valid_format
+from astropy.io.registry import (  # noqa: F401
+    get_reader,
+)
+try:
+    from astropy.io.registry.compat import default_registry
+except ModuleNotFoundError:  # astropy < 5
+    from astropy.io.registry import _get_valid_format as get_format
+else:
+    get_format = default_registry._get_valid_format
 
 from glue.lal import Cache
 
@@ -71,8 +79,8 @@ def get_segments(flags, segments, cache=None,
     # get format for files
     if cache is not None and not isinstance(cache, Cache):
         kwargs.setdefault(
-            'format', _get_valid_format('read', DataQualityFlag, None,
-                                        None, (cache[0],), {}))
+            'format', get_format('read', DataQualityFlag, None,
+                                 None, (cache[0],), {}))
 
     # populate an existing set of flags
     if isinstance(flags, (DataQualityFlag, DataQualityDict)):
