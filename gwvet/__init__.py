@@ -19,9 +19,9 @@
 """Gravitational-Wave Veto Evaluation and Testing suite
 """
 
-from . import _version
+from ._version import get_versions
 
-__version__ = _version.get_versions()['version']
+__version__ = get_versions()['version']
 __author__ = 'Duncan Macleod <duncan.macleod@ligo.org>'
 
 from gwsumm.segments import get_segments  # noqa: F401
@@ -40,5 +40,3 @@ from .metric import (  # noqa: F401
 
 del get_versions
 
-from . import _version
-__version__ = _version.get_versions()['version']
